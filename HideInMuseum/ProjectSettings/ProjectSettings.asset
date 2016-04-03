@@ -333,11 +333,11 @@ PlayerSettings:
   scriptingDefineSymbols: {}
   metroPackageName: HideInMuseum
   metroPackageVersion: 
-  metroCertificatePath: 
+  metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
-  metroCertificateSubject: 
-  metroCertificateIssuer: 
-  metroCertificateNotAfter: 0000000000000000
+  metroCertificateSubject: KeyboardFacerollers
+  metroCertificateIssuer: KeyboardFacerollers
+  metroCertificateNotAfter: 80c82882b3acd201
   metroApplicationDescription: HideInMuseum
   wsaImages: {}
   metroTileShortName: 
