@@ -994,9 +994,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0dc29a6b9bd8f664590fde7678b38e7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _lineRenderer: {fileID: 832100854}
-  _speed: 4
-  _tolerance: 0.03
+  _stateMachine:
+    Owner: {fileID: 0}
+    LineRenderer: {fileID: 832100854}
+    Speed: 4
+    Tolerance: 0.03
+    Path: []
+    LineRendererPoints: []
+    LastPosition: {x: 0, y: 0, z: 0}
+    LastLineRendererPosition: {x: 0, y: 0, z: 0}
+    ObstacleToPlayerDirection: {x: 0, y: 0, z: 0}
+    MoveTimer: 0
+    DistanceToNextNode: 0
+    CurrentPathIndex: 0
+    PositionsCount: 0
+    IsMoving: 0
+    WrongPath: 0
+    Blocked: 0
 --- !u!50 &832100857
 Rigidbody2D:
   serializedVersion: 2

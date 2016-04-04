@@ -1,53 +1,169 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class CharacterMovement : MonoBehaviour
 {
     [SerializeField]
-    private LineRenderer _lineRenderer;
-    [SerializeField]
-    private float _speed;
-    [SerializeField]
-    private float _tolerance;
-
-    private List<Vector3> _path = new List<Vector3>();
-    private List<Vector3> _lineRendererPoints = new List<Vector3>();
-    private Vector3 _lastPosition;
-    private Vector3 _lastLineRendererPosition;
-    private float _moveTimer;
-    private float _distanceToNextNode = 0.0f;
-    private int _currentPathIndex = 0;
-    private int _positionsCount = 0;
-    private bool _isMoving;
-    private bool _wrongPath = false;
+    private CharacterMovementStateMachine _stateMachine;
 
     void Start()
     {
-        _lineRenderer.sortingOrder = 2;
+        _stateMachine.Initialize(gameObject);
+        _stateMachine.ChangeState<CharacterMovementStateMove>(true);
     }
 
     void Update()
     {
-        if(_isMoving)
+        _stateMachine.Update();
+    }
+    
+    public void StartPath(Vector3 position)
+    {
+        _stateMachine.IsMoving = false;
+        _stateMachine.Path.Clear();
+        _stateMachine.PositionsCount = 0;
+        Color c = Color.white;
+        c.a = 0.5f;
+        _stateMachine.LineRenderer.SetColors(c, c);
+        _stateMachine.LastLineRendererPosition = position;
+        _stateMachine.WrongPath = false;
+    }
+
+    public void ContinuePath(Vector3 position)
+    {
+        if (_stateMachine.Path.Count > 0)
         {
-            if(_currentPathIndex < _path.Count)
+            if (Vector3.Distance(position, _stateMachine.Path[_stateMachine.Path.Count - 1]) < _stateMachine.Tolerance)
             {
-                _moveTimer += Time.deltaTime * _speed / _distanceToNextNode;
-                transform.position = Vector3.Lerp(_lastPosition, _path[_currentPathIndex], _moveTimer);
+                return;
+            }
+        }
+        float dist = Vector3.Distance(_stateMachine.LastLineRendererPosition, position);
+        if (dist > 0.2f)
+        {
+            Vector3 diff = (position - _stateMachine.LastLineRendererPosition);
+            int k = (int)(dist * 10.0f);
+            diff *= 1.0f / k;
+            for (int i = 1; i < k; ++i)
+            {
+                _stateMachine.LineRenderer.SetVertexCount(_stateMachine.PositionsCount + 1);
+                _stateMachine.LineRenderer.SetPosition(_stateMachine.PositionsCount, _stateMachine.LastLineRendererPosition + diff * i);
+                _stateMachine.LineRendererPoints.Add(_stateMachine.LastLineRendererPosition + diff * i);
+                _stateMachine.PositionsCount += 1;
+            }
+        }
+        _stateMachine.LineRenderer.SetVertexCount(_stateMachine.PositionsCount + 1);
+        _stateMachine.LineRenderer.SetPosition(_stateMachine.PositionsCount, position);
+        _stateMachine.LineRendererPoints.Add(position);
+        _stateMachine.LastLineRendererPosition = position;
+        _stateMachine.PositionsCount += 1;
+        _stateMachine.Path.Add(position);
+    }
+
+    public void EndPath(Vector3 position)
+    {
+        if (_stateMachine.WrongPath)
+        {
+            _stateMachine.LineRenderer.SetColors(Color.red, Color.red);
+        }
+        else
+        {
+            _stateMachine.LineRenderer.SetColors(Color.white, Color.white);
+        }
+        _stateMachine.Path.Add(position);
+        _stateMachine.IsMoving = true;
+        _stateMachine.CurrentPathIndex = 0;
+        _stateMachine.MoveTimer = 0.0f;
+        _stateMachine.LastPosition = _stateMachine.Owner.transform.position;
+        _stateMachine.DistanceToNextNode = Vector3.Distance(_stateMachine.Path[0], transform.position);
+    }
+
+    public void WrongPath()
+    {
+        _stateMachine.WrongPath = true;
+        Color c = Color.red;
+        c.a = 0.5f;
+        _stateMachine.LineRenderer.SetColors(c, c);
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        _stateMachine.ObstacleToPlayerDirection = (col.transform.position - transform.position).normalized;
+        _stateMachine.ChangeState<CharacterMovementStateBlocked>();
+    }
+}
+
+[Serializable]
+public class CharacterMovementStateMachine : StateMachine
+{
+    public LineRenderer LineRenderer;
+    public float Speed;
+    public float Tolerance;
+
+    [HideInInspector]
+    public List<Vector3> Path = new List<Vector3>();
+    [HideInInspector]
+    public List<Vector3> LineRendererPoints = new List<Vector3>();
+    [HideInInspector]
+    public Vector3 LastPosition;
+    [HideInInspector]
+    public Vector3 LastLineRendererPosition;
+    [HideInInspector]
+    public Vector3 ObstacleToPlayerDirection;
+    [HideInInspector]
+    public float MoveTimer;
+    [HideInInspector]
+    public float DistanceToNextNode = 0.0f;
+    [HideInInspector]
+    public int CurrentPathIndex = 0;
+    [HideInInspector]
+    public int PositionsCount = 0;
+    [HideInInspector]
+    public bool IsMoving;
+    [HideInInspector]
+    public bool WrongPath = false;
+    [HideInInspector]
+    public bool Blocked = false;
+}
+
+public class CharacterMovementStateMove : StateMachine.State
+{
+    private CharacterMovementStateMachine _characterSM;
+
+    public override void OnEnter(StateMachine stateMachine)
+    {
+        _characterSM = (CharacterMovementStateMachine)stateMachine;
+        _characterSM.LineRenderer.sortingOrder = 2;
+    }
+
+    public override void OnExit()
+    {
+
+    }
+
+    public override void Update()
+    {
+        if (_characterSM.IsMoving)
+        {
+            if (_characterSM.CurrentPathIndex < _characterSM.Path.Count)
+            {
+                _characterSM.MoveTimer += Time.deltaTime * _characterSM.Speed / _characterSM.DistanceToNextNode;
+                _characterSM.Owner.transform.position = Vector3.Lerp(_characterSM.LastPosition, _characterSM.Path[_characterSM.CurrentPathIndex], _characterSM.MoveTimer);
                 UpdateLineRendererPoints();
-                if (_moveTimer >= 1.0f)
+                if (_characterSM.MoveTimer >= 1.0f)
                 {
-                    _moveTimer = 0.0f;
-                    _currentPathIndex += 1;
-                    _lastPosition = transform.position;
-                    if (_currentPathIndex >= _path.Count)
+                    _characterSM.MoveTimer = 0.0f;
+                    _characterSM.CurrentPathIndex += 1;
+                    _characterSM.LastPosition = _characterSM.Owner.transform.position;
+                    if (_characterSM.CurrentPathIndex >= _characterSM.Path.Count)
                     {
-                        _isMoving = false;
+                        _characterSM.IsMoving = false;
                     }
                     else
                     {
-                        _distanceToNextNode = Vector3.Distance(_path[_currentPathIndex], _lastPosition);
+                        _characterSM.DistanceToNextNode = Vector3.Distance(_characterSM.Path[_characterSM.CurrentPathIndex], _characterSM.LastPosition);
                     }
                 }
             }
@@ -58,9 +174,9 @@ public class CharacterMovement : MonoBehaviour
     {
         int index = 0;
         float closestDist = float.MaxValue;
-        for(int i = 0; i < _lineRendererPoints.Count; ++i)
+        for (int i = 0; i < _characterSM.LineRendererPoints.Count; ++i)
         {
-            float dist = Vector3.Distance(transform.position, _lineRendererPoints[i]);
+            float dist = Vector3.Distance(_characterSM.Owner.transform.position, _characterSM.LineRendererPoints[i]);
             if (dist < closestDist)
             {
                 index = i;
@@ -68,90 +184,50 @@ public class CharacterMovement : MonoBehaviour
             }
         }
 
-        if(closestDist > 0.2f)
+        if (closestDist > 0.2f)
         {
             return;
         }
 
-        _lineRendererPoints = _lineRendererPoints.GetRange(index, _lineRendererPoints.Count - index);
+        _characterSM.LineRendererPoints = _characterSM.LineRendererPoints.GetRange(index, _characterSM.LineRendererPoints.Count - index);
 
-        _lineRenderer.SetVertexCount(_lineRendererPoints.Count);
-        _lineRenderer.SetPositions(_lineRendererPoints.ToArray());
+        _characterSM.LineRenderer.SetVertexCount(_characterSM.LineRendererPoints.Count);
+        _characterSM.LineRenderer.SetPositions(_characterSM.LineRendererPoints.ToArray());
+    }
+}
+
+public class CharacterMovementStateBlocked : StateMachine.State
+{
+    private CharacterMovementStateMachine _characterSM;
+
+    private Vector3 _initPosition;
+    private float _timer;
+
+    public override void OnEnter(StateMachine stateMachine)
+    {
+        _characterSM = (CharacterMovementStateMachine)stateMachine;
+        _characterSM.IsMoving = false;
+        _characterSM.Path.Clear();
+        _characterSM.LineRenderer.SetVertexCount(0);
+        _timer = 0.0f;
+        _initPosition = _characterSM.Owner.transform.position;
+        _characterSM.Blocked = true;
     }
 
-    public void StartPath(Vector3 position)
+    public override void OnExit()
     {
-        _isMoving = false;
-        _path.Clear();
-        _positionsCount = 0;
-        Color c = Color.white;
-        c.a = 0.5f;
-        _lineRenderer.SetColors(c, c);
-        _lastLineRendererPosition = position;
-        _wrongPath = false;
+        _characterSM.LastPosition = _characterSM.Owner.transform.position;
+        _characterSM.Blocked = false;
     }
 
-    public void ContinuePath(Vector3 position)
+    public override void Update()
     {
-        if(_path.Count > 0)
+        _timer += 10.0f * Time.deltaTime;
+        _characterSM.Owner.transform.position = _initPosition + new Vector3(Mathf.Sin(_timer), Mathf.Cos(_timer)) * 0.05f;
+        if(_timer > 15f)
         {
-            if (Vector3.Distance(position,_path[_path.Count - 1]) < _tolerance)
-            {
-                return;
-            }
+            _characterSM.Owner.transform.position = _initPosition - _characterSM.ObstacleToPlayerDirection * 0.05f;
+            _characterSM.ChangeState<CharacterMovementStateMove>();
         }
-        float dist = Vector3.Distance(_lastLineRendererPosition, position);
-        if(dist > 0.2f)
-        {
-            Vector3 diff = (position - _lastLineRendererPosition);
-            int k = (int)(dist * 10.0f);
-            diff *= 1.0f / k;
-            for(int i = 1; i < k; ++i)
-            {
-                _lineRenderer.SetVertexCount(_positionsCount + 1);
-                _lineRenderer.SetPosition(_positionsCount, _lastLineRendererPosition + diff * i);
-                _lineRendererPoints.Add(_lastLineRendererPosition + diff * i);
-                _positionsCount += 1;
-            }
-        }
-        _lineRenderer.SetVertexCount(_positionsCount + 1);
-        _lineRenderer.SetPosition(_positionsCount, position);
-        _lineRendererPoints.Add(position);
-        _lastLineRendererPosition = position;
-        _positionsCount += 1;
-        _path.Add(position);
-    }
-
-    public void EndPath(Vector3 position)
-    {
-        if(_wrongPath)
-        {
-            _lineRenderer.SetColors(Color.red, Color.red);
-        }
-        else
-        {
-            _lineRenderer.SetColors(Color.white, Color.white);
-        }
-        _path.Add(position);
-        _isMoving = true;
-        _currentPathIndex = 0;
-        _moveTimer = 0.0f;
-        _lastPosition = transform.position;
-        _distanceToNextNode = Vector3.Distance(_path[0], transform.position);
-    }
-
-    public void WrongPath()
-    {
-        _wrongPath = true;
-        Color c = Color.red;
-        c.a = 0.5f;
-        _lineRenderer.SetColors(c, c);
-    }
-
-    void OnCollisionEnter2D(Collision2D col)
-    {
-        _isMoving = false;
-        _path.Clear();
-        _lineRenderer.SetVertexCount(0);
     }
 }
