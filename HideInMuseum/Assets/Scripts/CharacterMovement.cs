@@ -24,11 +24,14 @@ public class CharacterMovement : MonoBehaviour
         _stateMachine.IsMoving = false;
         _stateMachine.Path.Clear();
         _stateMachine.PositionsCount = 0;
+        _stateMachine.LineRendererPoints.Clear();
         Color c = Color.white;
         c.a = 0.5f;
         _stateMachine.LineRenderer.SetColors(c, c);
         _stateMachine.LastLineRendererPosition = position;
         _stateMachine.WrongPath = false;
+        _stateMachine.LineRenderer.SetPositions(new Vector3[] { });
+        _stateMachine.LineRenderer.SetVertexCount(0);
     }
 
     public void ContinuePath(Vector3 position)

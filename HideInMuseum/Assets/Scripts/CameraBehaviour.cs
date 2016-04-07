@@ -24,12 +24,7 @@ public class CameraBehaviour : MonoBehaviour
 
     void Update()
     {
-#if UNITY_EDITOR
         if (Input.GetMouseButton(0))
-#elif UNITY_ANDROID || UNITY_IOS || UNITY_WP8_1 || UNITY_WSA_8_1 || UNITY_WSA_10_0
-        Touch t = Input.GetTouch(0);
-        if(t.phase != TouchPhase.Ended && t.phase != TouchPhase.Canceled)
-#endif
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction);
@@ -41,11 +36,7 @@ public class CameraBehaviour : MonoBehaviour
                     if (_currentCharacterAffected != null)
                     {
                         Vector3 position;
-#if UNITY_EDITOR
                         position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-#elif UNITY_ANDROID || UNITY_IOS || UNITY_WP8_1 || UNITY_WSA_8_1 || UNITY_WSA_10_0
-                        position = Camera.main.ScreenToWorldPoint(t.position);
-#endif
                         position.z = 0.0f;
                         _currentCharacterAffected.StartPath(position);
                     }
@@ -59,11 +50,7 @@ public class CameraBehaviour : MonoBehaviour
                     }
 
                     Vector3 position;
-#if UNITY_EDITOR
                     position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-#elif UNITY_ANDROID || UNITY_IOS || UNITY_WP8_1 || UNITY_WSA_8_1 || UNITY_WSA_10_0
-                    position = Camera.main.ScreenToWorldPoint(t.position);
-#endif
                     position.z = 0.0f;
                     _currentCharacterAffected.ContinuePath(position);
                 }
@@ -80,11 +67,7 @@ public class CameraBehaviour : MonoBehaviour
             if(_currentCharacterAffected != null)
             {
                 Vector3 position;
-#if UNITY_EDITOR
                 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-#elif UNITY_ANDROID || UNITY_IOS || UNITY_WP8_1 || UNITY_WSA_8_1 || UNITY_WSA_10_0
-                 position = Camera.main.ScreenToWorldPoint(t.position);
-#endif
                 position.z = 0.0f;
                 _currentCharacterAffected.EndPath(position);
             }
