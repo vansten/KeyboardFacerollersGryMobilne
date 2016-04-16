@@ -30,6 +30,7 @@ public class InputHandler : Singleton<InputHandler>
     private float _halfBgSize;
     private InputMode _currentMode;
     private bool _inputEnded;
+    private bool _continuePath;
 
     #endregion
 
@@ -44,6 +45,8 @@ public class InputHandler : Singleton<InputHandler>
     void Update()
     {
         _inputEnded = false;
+        _continuePath = false;
+
 #if UNITY_EDITOR || UNITY_STANDALONE
         ProcessMouse();
 #elif UNITY_ANDROID || UNITY_IOS
@@ -91,6 +94,7 @@ public class InputHandler : Singleton<InputHandler>
             _positionChange = Input.mousePosition - _prevPosition;
             _positionChange *= 0.1f * Camera.main.orthographicSize;
             _prevPosition = Input.mousePosition;
+            _continuePath = true;
         }
 
         if(Input.GetMouseButtonUp(0))
@@ -121,6 +125,10 @@ public class InputHandler : Singleton<InputHandler>
             else if(t0.phase == TouchPhase.Canceled || t0.phase == TouchPhase.Ended)
             {
                 _inputEnded = true;
+            }
+            else if(t0.phase == TouchPhase.Moved)
+            {
+                _continuePath = true;
             }
 
             _currentPosition = t0.position;
@@ -176,6 +184,7 @@ public class InputHandler : Singleton<InputHandler>
 
     void UpdateCameraControls()
     {
+        _positionChange /= Camera.main.orthographicSize;
         if(_invertedControls)
         {
             Camera.main.transform.position -= _positionChange;
@@ -197,7 +206,8 @@ public class InputHandler : Singleton<InputHandler>
         {
             _currentGroup.EndPath();
         }
-        else
+        
+        if(_continuePath)
         {
             _currentGroup.ContinuePath(Camera.main.ScreenToWorldPoint(_currentPosition));
         }
