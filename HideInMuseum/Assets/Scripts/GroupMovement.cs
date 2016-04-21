@@ -31,7 +31,7 @@ public class GroupMovement : MonoBehaviour
         _lineRenderer.sortingOrder = 2;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         if(!_isMoving)
         {
@@ -59,27 +59,24 @@ public class GroupMovement : MonoBehaviour
 
     void UpdateLineRendererPoints()
     {
+        float tolerance = 0.2f;
         int index = 0;
-        float closestDist = float.MaxValue;
-        for (int i = 0; i < _lineRendererPoints.Count; ++i)
+        for(int i = 0; i < _lineRendererPoints.Count; ++i)
         {
-            float dist = Vector3.Distance(transform.position, _lineRendererPoints[i]);
-            if (dist < closestDist)
+            if(Vector3.Distance(transform.position, _lineRendererPoints[i]) > tolerance)
             {
-                index = i;
-                closestDist = dist;
+                index = i - 1;
+                break;
             }
         }
 
-        if (closestDist > 0.2f)
+        if(index >= 0)
         {
-            return;
+            _lineRendererPoints = _lineRendererPoints.GetRange(index, _lineRendererPoints.Count - index);
+
+            _lineRenderer.SetVertexCount(_lineRendererPoints.Count);
+            _lineRenderer.SetPositions(_lineRendererPoints.ToArray());
         }
-
-        _lineRendererPoints = _lineRendererPoints.GetRange(index, _lineRendererPoints.Count - index);
-
-        _lineRenderer.SetVertexCount(_lineRendererPoints.Count);
-        _lineRenderer.SetPositions(_lineRendererPoints.ToArray());
     }
 
     public void StartPath()
@@ -144,5 +141,19 @@ public class GroupMovement : MonoBehaviour
         _invertedDistance = 1.0f / (_path[0] - transform.position).magnitude;
         _prevPosition = transform.position;
         _lineRenderer.SetColors(Color.white, Color.white);
+    }
+
+    public void ClearPath()
+    {
+        _path.Clear();
+        _lineRendererPoints.Clear();
+        _isMoving = false;
+        _lineRenderer.SetPositions(new Vector3[] { });
+        _lineRenderer.SetVertexCount(0);
+    }
+
+    void OnCollisionEnter2D(Collision2D col)
+    {
+        ClearPath();
     }
 }

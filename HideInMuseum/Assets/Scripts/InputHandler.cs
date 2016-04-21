@@ -14,6 +14,8 @@ public class InputHandler : Singleton<InputHandler>
     [SerializeField]
     private Vector2 _zoomRange;
     [SerializeField]
+    private float _zoomStep;
+    [SerializeField]
     private float _bgSize;
     [SerializeField]
     [Tooltip("How much can camera show clear color? (outside background, for example setting 0.5 - it can be 0.5 in x and 0.5 in y different that corner of background)")]
@@ -87,7 +89,7 @@ public class InputHandler : Singleton<InputHandler>
         }
 
         float wheelValue = Input.mouseScrollDelta.y;
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - wheelValue * 0.5f, _zoomRange.x, _zoomRange.y);
+        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - wheelValue * _zoomStep, _zoomRange.x, _zoomRange.y);
 
         if(Input.GetMouseButton(0))
         {
@@ -224,8 +226,8 @@ public class InputHandler : Singleton<InputHandler>
         minY = size - _halfBgSize - _cameraError;
         maxY = _halfBgSize - size + _cameraError;
         Camera.main.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
-                                                     Mathf.Clamp(cameraPosition.y, minY, maxY),
-                                                     cameraPosition.z);
+                                                        Mathf.Clamp(cameraPosition.y, minY, maxY),
+                                                        cameraPosition.z);
     }
 
     #endregion
