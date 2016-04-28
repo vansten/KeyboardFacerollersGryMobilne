@@ -111,7 +111,7 @@ public class InputHandler : Singleton<InputHandler>
         if (touches.Length == 0)
         {
             //There is no touch to check
-            _inputEnded = true;
+            //_inputEnded = true;
             return;
         }
 
@@ -152,7 +152,7 @@ public class InputHandler : Singleton<InputHandler>
             float currentDistanceBetweenTouches = Vector3.Distance(currentT1Position, currentT2Position);
             float prevDistanceBetweenTouches = Vector3.Distance(prevT1Position, prevT2Position);
             float distanceChange = currentDistanceBetweenTouches - prevDistanceBetweenTouches;
-            Camera.main.orthographicSize += distanceChange;
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + distanceChange, _zoomRange.x, _zoomRange.y);
         }
     }
 
@@ -164,7 +164,7 @@ public class InputHandler : Singleton<InputHandler>
     {
         //Do raycast and check if we want to change mode
         RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction);
-        if(hit.collider != null)
+        if(hit.collider != null && hit.collider.gameObject.activeInHierarchy)
         {
             //Check if it's character
             _currentGroup = hit.collider.GetComponent<GroupMovement>();

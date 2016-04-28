@@ -15,6 +15,7 @@ public class GameManager : Singleton<GameManager>
 {
     #region Private variables
 
+    private GameState _previousState;
     private GameState _currentState;
     private float _satisfactionLevel;
     private float _timeLeft;
@@ -45,6 +46,7 @@ public class GameManager : Singleton<GameManager>
         }
         set
         {
+            _previousState = _currentState;
             _currentState = value;
             switch(_currentState)
             {
@@ -122,7 +124,7 @@ public class GameManager : Singleton<GameManager>
 
     void Start()
     {
-        CurrentState = GameState.Menu;
+        CurrentState = GameState.VisitStage;
         SatisfactionLevel = 0.0f;
     }
 
@@ -131,6 +133,24 @@ public class GameManager : Singleton<GameManager>
         if(_currentState == GameState.DecoratorStage || _currentState == GameState.VisitStage)
         {
             _timeLeft -= Time.deltaTime;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            switch (_currentState)
+            {
+                case GameState.Menu:
+                    Application.Quit();
+                    break;
+                case GameState.DecoratorStage:
+                case GameState.StatisticsWindow:
+                case GameState.VisitStage:
+                    CurrentState = GameState.Menu;
+                    break;
+                case GameState.Paused:
+                    CurrentState = _previousState;
+                    break;
+            }
         }
     }
 

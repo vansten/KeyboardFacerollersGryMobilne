@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ObjectBase : MonoBehaviour
 {
-    protected virtual void Start()
+    protected virtual void Awake()
     {
         GameManager.Instance.OnDecoratorStageBegin += OnDecoratorStagetBegin;
         GameManager.Instance.OnMenuBegin += OnMenuBegin;

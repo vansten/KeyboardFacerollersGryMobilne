@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GroupMovement : MonoBehaviour
+public class GroupMovement : ObjectBase
 {
     [SerializeField]
     private float _speed;
@@ -155,5 +155,30 @@ public class GroupMovement : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         ClearPath();
+    }
+
+    public override void OnDecoratorStagetBegin()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnMenuBegin()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnPaused()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnStatisticsWindowBegin()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnVisitStageBegin()
+    {
+        gameObject.SetActive(true);
     }
 }
