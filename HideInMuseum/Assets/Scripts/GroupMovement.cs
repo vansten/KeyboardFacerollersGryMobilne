@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class GroupMovement : ObjectBase
+public class GroupMovement : MonoBehaviour
 {
+    [SerializeField]
+    private List<Sprite> _sprites;
     [SerializeField]
     private float _speed;
     [SerializeField]
@@ -12,47 +14,84 @@ public class GroupMovement : ObjectBase
     private List<Vector3> _path;
     private List<Vector3> _lineRendererPoints;
     private LineRenderer _lineRenderer;
+    private Color _myLineColor;
+    private Color _colorToSet = Color.red;
     private Vector3 _prevPosition;
+    private Vector3 _targetUp;
+    private Vector3 _initUp;
     private float _invertedDistance;
     private float _movingTimer = 0.0f;
+    private float _standingTimer = 0.0f;
     private int _currentPathIndex = 0;
     private int _pointsCount;
     private bool _isMoving = false;
 
-    void Start()
+    void OnEnable()
     {
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if(sr != null && _sprites != null && _sprites.Count > 0)
+        {
+            sr.sprite = _sprites[Random.Range(0, _sprites.Count)];
+        }
+
         _lineRenderer = GetComponent<LineRenderer>();
         if(_lineRenderer == null)
         {
             _lineRenderer = gameObject.AddComponent<LineRenderer>();
         }
-        _lineRenderer.SetWidth(0.2f, 0.2f);
-        _lineRenderer.SetColors(Color.white, Color.white);
+        _lineRenderer.SetWidth(0.5f, 0.5f);
+        _myLineColor = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), 1.0f);
+        _lineRenderer.SetColors(_myLineColor, _myLineColor);
         _lineRenderer.sortingOrder = 2;
+
+        transform.up = Vector2.up;
+        transform.position = Vector3.zero;
+        ClearPath();
     }
 
     void FixedUpdate()
     {
         if(!_isMoving)
         {
+            _standingTimer += Time.deltaTime;
+            if(_standingTimer > 5.0f)
+            {
+                if(_standingTimer < 10.0f)
+                {
+                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, transform.position);
+                }
+                else if(_standingTimer < 20.0f)
+                {
+                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                }
+                else
+                {
+                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, transform.position);
+                }
+            }
+
             return;
         }
 
         _movingTimer += Time.deltaTime * _speed * _invertedDistance;
         transform.position = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
+        transform.up = Vector3.Lerp(_initUp, _targetUp, _movingTimer * 4.0f);
         UpdateLineRendererPoints();
         if (_movingTimer >= 1.0f)
         {
             _prevPosition = transform.position;
             _movingTimer = 0.0f;
             _currentPathIndex += 1;
-            if(_currentPathIndex >= _path.Count)
+            _initUp = transform.up;
+            if (_currentPathIndex >= _path.Count)
             {
+                _standingTimer = 0.0f;
                 _isMoving = false;
                 _lineRenderer.SetVertexCount(0);
                 _lineRenderer.SetPositions(new Vector3[] { });
                 return;
             }
+            _targetUp = -(_path[_currentPathIndex] - _prevPosition).normalized;
             _invertedDistance = 1.0f / (_path[_currentPathIndex] - _prevPosition).magnitude;
         }
     }
@@ -85,11 +124,13 @@ public class GroupMovement : ObjectBase
         _isMoving = false;
         _pointsCount = 0;
         _lineRendererPoints = new List<Vector3>();
-        Color c = Color.white;
+        _colorToSet = _myLineColor;
+        Color c = _myLineColor;
         c.a = 0.5f;
         _lineRenderer.SetColors(c, c);
         _lineRenderer.SetPositions(new Vector3[] { });
         _lineRenderer.SetVertexCount(0);
+        _initUp = transform.up;
     }
 
     public void ContinuePath(Vector3 position)
@@ -138,13 +179,28 @@ public class GroupMovement : ObjectBase
         }
         _currentPathIndex = 0;
         _isMoving = true;
+        _standingTimer = 0.0f;
+        _movingTimer = 0.0f;
         _invertedDistance = 1.0f / (_path[0] - transform.position).magnitude;
         _prevPosition = transform.position;
-        _lineRenderer.SetColors(Color.white, Color.white);
+        _targetUp = -(_path[0] - transform.position).normalized;
+        _lineRenderer.SetColors(_colorToSet, _colorToSet);
     }
 
+    public void WrongPath()
+    {
+        _colorToSet = Color.red;
+        Color c = _colorToSet;
+        c.a = 0.5f;
+        _lineRenderer.SetColors(c, c);
+    }
+    
     public void ClearPath()
     {
+        if(_path == null)
+        {
+            return;
+        }
         _path.Clear();
         _lineRendererPoints.Clear();
         _isMoving = false;
@@ -154,31 +210,10 @@ public class GroupMovement : ObjectBase
 
     void OnCollisionEnter2D(Collision2D col)
     {
+        if(col.gameObject.GetComponent<GroupMovement>() != null)
+        {
+            GameManager.Instance.SatisfactionLevel -= 0.75f;
+        }
         ClearPath();
-    }
-
-    public override void OnDecoratorStagetBegin()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public override void OnMenuBegin()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public override void OnPaused()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public override void OnStatisticsWindowBegin()
-    {
-        gameObject.SetActive(false);
-    }
-
-    public override void OnVisitStageBegin()
-    {
-        gameObject.SetActive(true);
     }
 }

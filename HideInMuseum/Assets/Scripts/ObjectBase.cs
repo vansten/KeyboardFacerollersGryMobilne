@@ -15,35 +15,35 @@ public class ObjectBase : MonoBehaviour
     public virtual void OnVisitStageBegin()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.LogWarning("Base function for OnVisitStageBegin called");
+        Debug.LogWarning("Base function for OnVisitStageBegin called in " + gameObject.name);
 #endif
     }
 
     public virtual void OnDecoratorStagetBegin()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.LogWarning("Base function for OnDecoratorStageBegin called");
+        Debug.LogWarning("Base function for OnDecoratorStageBegin called in " + gameObject.name);
 #endif
     }
 
     public virtual void OnMenuBegin()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.LogWarning("Base function for OnMenuBegin called");
+        Debug.LogWarning("Base function for OnMenuBegin called in " + gameObject.name);
 #endif
     }
 
     public virtual void OnStatisticsWindowBegin()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.LogWarning("Base function for OnStatisticsWindowBegin called");
+        Debug.LogWarning("Base function for OnStatisticsWindowBegin called in " + gameObject.name);
 #endif
     }
 
     public virtual void OnPaused()
     {
 #if UNITY_EDITOR || DEVELOPMENT_BUILD
-        Debug.LogWarning("Base function for OnPaused called");
+        Debug.LogWarning("Base function for OnPaused called in " + gameObject.name);
 #endif
     }
 }

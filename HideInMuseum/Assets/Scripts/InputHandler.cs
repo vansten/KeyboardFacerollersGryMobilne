@@ -42,10 +42,16 @@ public class InputHandler : Singleton<InputHandler>
     {
         _aspectRatio = (float)Screen.width / (float)Screen.height;
         _halfBgSize = 0.5f * _bgSize;
+        Camera.main.orthographicSize = _zoomRange.y;
     }
 
     void Update()
     {
+        if(GameManager.Instance.CurrentState != GameState.DecoratorStage && GameManager.Instance.CurrentState != GameState.VisitStage)
+        {
+            return;
+        }
+
         _inputEnded = false;
         _continuePath = false;
 
@@ -96,6 +102,7 @@ public class InputHandler : Singleton<InputHandler>
             _positionChange = Input.mousePosition - _prevPosition;
             _positionChange *= 0.1f * Camera.main.orthographicSize;
             _prevPosition = Input.mousePosition;
+            _rayToCast = Camera.main.ScreenPointToRay(Input.mousePosition);
             _continuePath = true;
         }
 
@@ -111,7 +118,6 @@ public class InputHandler : Singleton<InputHandler>
         if (touches.Length == 0)
         {
             //There is no touch to check
-            //_inputEnded = true;
             return;
         }
 
@@ -130,6 +136,7 @@ public class InputHandler : Singleton<InputHandler>
             }
             else if(t0.phase == TouchPhase.Moved)
             {
+                _rayToCast = Camera.main.ScreenPointToRay(t0.position);
                 _continuePath = true;
             }
 
@@ -146,13 +153,14 @@ public class InputHandler : Singleton<InputHandler>
             Touch t1 = touches[0];
             Touch t2 = touches[1];
             Vector3 currentT1Position = t1.position;
-            Vector3 prevT1Position = t1.position + t1.deltaPosition;
+            Vector3 prevT1Position = t1.position - t1.deltaPosition;
             Vector3 currentT2Position = t2.position;
-            Vector3 prevT2Position = t2.position + t2.deltaPosition;
+            Vector3 prevT2Position = t2.position - t2.deltaPosition;
             float currentDistanceBetweenTouches = Vector3.Distance(currentT1Position, currentT2Position);
             float prevDistanceBetweenTouches = Vector3.Distance(prevT1Position, prevT2Position);
             float distanceChange = currentDistanceBetweenTouches - prevDistanceBetweenTouches;
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + distanceChange, _zoomRange.x, _zoomRange.y);
+            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Mathf.Sign(distanceChange) * _zoomStep, _zoomRange.x, _zoomRange.y);
+            _positionChange = Vector3.zero;
         }
     }
 
@@ -211,6 +219,15 @@ public class InputHandler : Singleton<InputHandler>
         
         if(_continuePath)
         {
+            RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction);
+            if (hit.collider != null && hit.collider.gameObject.activeInHierarchy)
+            {
+                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+                {
+                    _currentGroup.WrongPath();
+                }
+            }
+
             _currentGroup.ContinuePath(Camera.main.ScreenToWorldPoint(_currentPosition));
         }
     }
