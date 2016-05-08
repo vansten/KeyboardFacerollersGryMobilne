@@ -4,6 +4,15 @@ using System.Collections.Generic;
 
 public class GroupMovement : MonoBehaviour
 {
+    public GameObject GroupMemberTemplate;
+    public int GroupCount;
+    [SerializeField]
+    private List<GroupMember> _groupMembers = new List<GroupMember>();
+
+    public List<Sprite> Sprites
+    {
+        get { return _sprites; }
+    }
     [SerializeField]
     private List<Sprite> _sprites;
     [SerializeField]
@@ -24,7 +33,18 @@ public class GroupMovement : MonoBehaviour
     private float _standingTimer = 0.0f;
     private int _currentPathIndex = 0;
     private int _pointsCount;
+
+    public bool IsMoving
+    {
+        get{ return _isMoving;}
+    }
     private bool _isMoving = false;
+
+    public Vector3 MovementDelta
+    {
+        get { return _movementDelta; }
+    }
+    private Vector3 _movementDelta;
 
     void OnEnable()
     {
@@ -47,7 +67,35 @@ public class GroupMovement : MonoBehaviour
         transform.up = Vector2.up;
         transform.position = Vector3.zero;
         ClearPath();
+        
+        GenerateGroup();
     }
+
+    void GenerateGroup()
+    {
+        if (GroupCount <= 0 || _groupMembers.Count == GroupCount) return;
+
+        for (int i = 0; i < GroupCount; ++i)
+        {
+            Transform previousInQueue;
+            previousInQueue = i == 0 ? transform : _groupMembers[i - 1].transform;
+            GameObject go = Instantiate(GroupMemberTemplate, previousInQueue.GetChild(0).position, previousInQueue.rotation) as GameObject;
+            go.transform.parent = previousInQueue.parent;
+            GroupMember member = go.GetComponent<GroupMember>();
+            if (member != null)
+            {
+                _groupMembers.Add(member);
+                member.GroupLeader = this;
+                member.PreviousMemberHook = previousInQueue.GetChild(0);
+            }
+            SpriteRenderer sprite = go.GetComponent<SpriteRenderer>();
+            if (sprite != null)
+            {
+                sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
+            }
+        }
+    } 
+    
 
     void FixedUpdate()
     {
@@ -74,7 +122,9 @@ public class GroupMovement : MonoBehaviour
         }
 
         _movingTimer += Time.deltaTime * _speed * _invertedDistance;
-        transform.position = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
+        Vector3 newPosition = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
+        _movementDelta = newPosition - transform.position;
+        transform.position = newPosition;
         transform.up = Vector3.Lerp(_initUp, _targetUp, _movingTimer * 4.0f);
         UpdateLineRendererPoints();
         if (_movingTimer >= 1.0f)

@@ -14843,7 +14843,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 429686, guid: 69525dd827dc86d44ae82f535d4b6b8f, type: 2}
       propertyPath: m_RootOrder
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 69525dd827dc86d44ae82f535d4b6b8f, type: 2}
@@ -25387,7 +25387,7 @@ RectTransform:
   - {fileID: 321134922}
   - {fileID: 1103228534}
   m_Father: {fileID: 1368400526}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -32815,6 +32815,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _museumObject: {fileID: 1139643353}
   _counterText: {fileID: 1331777151}
+  _visitStageTime: 300
+  _decoratorStageTime: 600
   SatisfactionAmplitude: 5
 --- !u!4 &787189800
 Transform:
@@ -56443,8 +56445,8 @@ Transform:
   m_LocalPosition: {x: 1.5595543, y: 4.119719, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 271664788}
   - {fileID: 598970899}
+  - {fileID: 271664788}
   m_Father: {fileID: 0}
   m_RootOrder: 4
 --- !u!114 &1368400527
