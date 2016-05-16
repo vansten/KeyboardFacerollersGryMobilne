@@ -8,7 +8,13 @@ public class GroupMovement : MonoBehaviour
     public int GroupCount;
     [SerializeField]
     private List<GroupMember> _groupMembers = new List<GroupMember>();
-
+    [SerializeField]
+    protected List<RoomType> _roomsToVisit = new List<RoomType>();
+    public List<RoomType> RoomsToVisit
+    {
+        get { return _roomsToVisit;}
+        set { _roomsToVisit = value; }
+    } 
     public List<Sprite> Sprites
     {
         get { return _sprites; }
@@ -33,6 +39,18 @@ public class GroupMovement : MonoBehaviour
     private float _standingTimer = 0.0f;
     private int _currentPathIndex = 0;
     private int _pointsCount;
+
+    [SerializeField]
+    protected float _maxTimeToVisitRoom = 20f;
+    protected float _maxTimeToVisitTimer;
+    protected bool _visitingApproperiateRoom;
+    [SerializeField]
+    protected float _visitRequiredTime;
+    [SerializeField]
+    protected RoomType _currentRoomType;
+
+    private ParticleSystem _plusParticle;
+    private ParticleSystem _minusParticle;
 
     public bool IsMoving
     {
@@ -67,8 +85,27 @@ public class GroupMovement : MonoBehaviour
         transform.up = Vector2.up;
         transform.position = Vector3.zero;
         ClearPath();
-        
+
+        //Litle blah but why not
+        ParticleSystem particleSystem = transform.GetChild(1).GetComponent<ParticleSystem>();
+        if (particleSystem != null)
+        {
+            _plusParticle = particleSystem;
+            particleSystem = null;
+        }
+        particleSystem = transform.GetChild(2).GetComponent<ParticleSystem>();
+        if (particleSystem != null)
+        {
+            _minusParticle = particleSystem;
+        }
+
         GenerateGroup();
+
+        if(_roomsToVisit.Count == 0) GameManager.Instance.GenerateMission(this);
+
+        _visitRequiredTime = (_groupMembers.Count + 1);
+        _maxTimeToVisitTimer = 0.0f;
+        _visitingApproperiateRoom = false;
     }
 
     void GenerateGroup()
@@ -94,33 +131,56 @@ public class GroupMovement : MonoBehaviour
                 sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
             }
         }
-    } 
-    
+    }
+
+    protected void RoomCompleted()
+    {
+        RoomsToVisit.RemoveAt(0);
+        _visitingApproperiateRoom = false;
+        _maxTimeToVisitTimer = 0f;
+        _standingTimer = 0.0f;
+        GameManager.Instance.UpdateGroupMissionsDispaly(this);
+    }
 
     void FixedUpdate()
     {
+        if(!_visitingApproperiateRoom) _maxTimeToVisitTimer += Time.deltaTime;
+        if (_maxTimeToVisitTimer > _maxTimeToVisitRoom)
+        {
+            if (_minusParticle.isStopped) _minusParticle.Play();
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+        }
+
         if(!_isMoving)
         {
             _standingTimer += Time.deltaTime;
-            if(_standingTimer > 5.0f)
+            if (_standingTimer > 2.0f)
             {
-                if(_standingTimer < 10.0f)
+                if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
                 {
-                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, transform.position);
-                }
-                else if(_standingTimer < 20.0f)
-                {
-                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    if(_minusParticle.isPlaying) _minusParticle.Stop();
+                    if(_plusParticle.isStopped) _plusParticle.Play();
+                    GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    if (_standingTimer > _visitRequiredTime)
+                    {
+                        RoomCompleted();
+                    }
                 }
                 else
                 {
-                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, transform.position);
+                    if (_standingTimer > 5.0f)
+                    {
+                        if(_plusParticle.isPlaying) _plusParticle.Stop();
+                        if (_minusParticle.isStopped) _minusParticle.Play();
+                        GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    }
                 }
             }
-
-            return;
+            return;                
         }
 
+        if (_minusParticle.isPlaying) _minusParticle.Stop();
+        if (_plusParticle.isPlaying) _plusParticle.Stop();
         _movingTimer += Time.deltaTime * _speed * _invertedDistance;
         Vector3 newPosition = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
         _movementDelta = newPosition - transform.position;
@@ -265,5 +325,13 @@ public class GroupMovement : MonoBehaviour
             GameManager.Instance.SatisfactionLevel -= 0.75f;
         }
         ClearPath();
+    }
+
+    void OnTriggerEnter2D(Collider2D col)
+    {
+        if (col.gameObject.layer == LayerMask.NameToLayer("Room"))
+        {
+            _currentRoomType = col.GetComponent<Room>().Type;
+        }
     }
 }

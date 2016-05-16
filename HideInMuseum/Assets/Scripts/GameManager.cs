@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 using System;
 using UnityEngine.UI;
 
@@ -40,6 +41,8 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private GameObject _museumObject;
     [SerializeField]
+    protected List<GroupMovement> _groupLeaders;
+    [SerializeField]
     private Text _counterText;
     private GameState _previousState;
     private GameState _currentState;
@@ -50,6 +53,8 @@ public class GameManager : Singleton<GameManager>
     private float _satisfactionLevel;
     private float _timeLeft;
     private float _stageTime;
+    [SerializeField]
+    protected VisitStageController _visitStageController;
 
     #endregion
 
@@ -229,6 +234,25 @@ public class GameManager : Singleton<GameManager>
     #endregion
 
     #region GameManager methods
+
+    public void UpdateGroupMissionsDispaly(GroupMovement group)
+    {
+        _visitStageController.FillRoomsToVisit(group);
+    }
+
+    public void GenerateMission(GroupMovement group)
+    {
+        group.RoomsToVisit.Clear();
+        RoomType random = (RoomType) UnityEngine.Random.Range(0, 6);
+        for (int i = 0; i < group.GroupCount + 1; ++i)
+        {
+            while (group.RoomsToVisit.Contains(random))
+            {
+                random = (RoomType)UnityEngine.Random.Range(0, 7);
+            }
+            group.RoomsToVisit.Add(random);            
+        }
+    }
 
     public void DecreaseSatisfaction(SatisfactionStage stage, Vector3 position)
     {
