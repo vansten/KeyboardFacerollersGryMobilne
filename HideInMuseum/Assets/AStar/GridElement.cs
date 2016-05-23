@@ -30,7 +30,7 @@ namespace AStar
             set { _elementIndex = value; }
         }
 
-        protected GridElement _pathParentField;
+        protected GridElement _pathParentField = null;
         public virtual GridElement PathParentField 
         {
             get { return _pathParentField; }
@@ -61,8 +61,9 @@ namespace AStar
                 int totalCost = _heuristicCost;
                 while (element != null)
                 {
-                    totalCost += FieldMoveCost;
-                    element = PathParentField;
+                    if (element == null || element == element.PathParentField) break;
+                    totalCost += element.FieldMoveCost;
+                    element = element.PathParentField;
                 }
                 return totalCost;
             }
@@ -92,21 +93,42 @@ namespace AStar
 
         public static int CheckMoveDistance(GridElement element, GridElement newParent)
         {
-            if (element.PathParentField != null)
-            {
-                return Mathf.Abs(element.ElementIndex.x - newParent.ElementIndex.x) +
-                    Mathf.Abs(element.ElementIndex.y - newParent.ElementIndex.y) +
-                    Mathf.Abs(element.ElementIndex.z - newParent.ElementIndex.z);
-            }
-            else
-            {
-                return 0;
-            }
+            return Mathf.Abs(element.ElementIndex.x - newParent.ElementIndex.x) +
+                Mathf.Abs(element.ElementIndex.y - newParent.ElementIndex.y) +
+                Mathf.Abs(element.ElementIndex.z - newParent.ElementIndex.z);
         }
 
         public virtual void CalculateHeuristic(GridElement element)
         {
-            _heuristicCost = Mathf.FloorToInt(Vector3.Distance(gameObject.transform.position, element.transform.position));
+            _heuristicCost = Mathf.CeilToInt(Vector3.Distance(gameObject.transform.position, element.transform.position));
+        }
+
+        public virtual void CheckNewParent(GridElement newParent)
+        {
+            GridElement oldParentElement = PathParentField;
+            int cost = TotalFieldMoveCost;
+            PathParentField = newParent;
+            if (cost < TotalFieldMoveCost)
+            {
+                PathParentField = oldParentElement;
+            }
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            GridElement objAsGridElement = obj as GridElement;
+            if (objAsGridElement == null) return false;
+            return Equals(objAsGridElement);
+        }
+        public override int GetHashCode()
+        {
+            return _elementIndex.x * _elementIndex.y * _elementIndex.z;
+        }
+        public bool Equals(GridElement other)
+        {
+            if (other == null) return false;
+            return _elementIndex.Equals(other._elementIndex);
         }
     }
 }

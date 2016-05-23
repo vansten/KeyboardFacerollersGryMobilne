@@ -4,18 +4,17 @@ using System.Collections;
 
 namespace AStar
 {
-    public enum GirdType
+    public enum GridType
     {
         TwoDimensional = 0,
         ThreeDimensional
-
     }
 
     public class Grid : MonoBehaviour
     {
         [SerializeField]
-        protected GirdType _gridType;
-        public GirdType GridType
+        protected GridType _gridType;
+        public GridType GridType
         {
             get { return _gridType; }
             set { _gridType = value; }
@@ -43,28 +42,38 @@ namespace AStar
         [SerializeField]
         protected GameObject _gridElementObject;
 
-        protected GridElement[,,] _elements;
-        public virtual GridElement[,,] Elements
+        [SerializeField]
+        protected GridElement[, ,] _elements = new GridElement[1,1,1];
+        public virtual GridElement[, ,] Elements
         {
             get { return _elements; }
         }
 
         protected IntVector3 _elementMoveCostDirection;
 
+        [SerializeField]
+        protected bool _checkWalkability;
+        [SerializeField]
+        protected LayerMask _collisionLayers;
+
+        public void Awake()
+        {
+            RegenerateGrid();
+        }
+
         [ContextMenu("GenerateGrid")]
         public virtual void GenerateGrid()
         {
-            _elementMoveCostDirection = new IntVector3(0, 
-                (int)(10 * ((_gridElementSize.x + _gridElementSize.y + _gridElementSize.z) / 3f)), 
-                (int)(10 * (Mathf.Sqrt(Mathf.Pow(_gridElementSize.x, 2f) + Mathf.Pow(_gridElementSize.y, 2f) + Mathf.Pow(_gridElementSize.z, 2f)))));
+            _elementMoveCostDirection = new IntVector3(Mathf.CeilToInt((_gridElementSize.x + _gridElementSize.y) / 2f), Mathf.CeilToInt(Mathf.Sqrt(Mathf.Pow(_gridElementSize.x, 2f) + Mathf.Pow(_gridElementSize.y, 2f))), 
+                Mathf.CeilToInt(Mathf.Sqrt(Mathf.Pow(_gridElementSize.x, 2f) + Mathf.Pow(_gridElementSize.y, 2f) + Mathf.Pow(_gridElementSize.z, 2f))));
 
             switch (_gridType)
             {
-                case GirdType.TwoDimensional:
+                case GridType.TwoDimensional:
                 {
                     int x = _gridSize.x;
                     int y = _gridSize.y;
-                    _elements = new GridElement[y, x, 1];
+                    _elements = new GridElement[x, y, 1];
 
                     for (int i = 0; i < x; ++i)
                     {
@@ -100,26 +109,23 @@ namespace AStar
                             element.transform.parent = gameObject.transform;
 
                             GridElement gridElement = element.GetComponent<GridElement>();
-
                             if (gridElement == null)
                             {
-                                _elements[j, i, 0] = element.AddComponent<GridElement>();
+                                gridElement = element.AddComponent<GridElement>();
                             }
-                            else
-                            {
-                                _elements[j, i, 0] = gridElement;
-                            }
+
                             gridElement.ElementIndex = new IntVector3(j,i,0);
                             gridElement.ElementMoveCostDirection = _elementMoveCostDirection;
+                            _elements[j, i, 0] = gridElement;
                         }
                     }
                 }
                 break;
-                case GirdType.ThreeDimensional:
+                case GridType.ThreeDimensional:
                 {
-                    int x = (int) _gridSize.x;
-                    int y = (int) _gridSize.y;
-                    int z = (int) _gridSize.z;
+                    int x = _gridSize.x;
+                    int y = _gridSize.y;
+                    int z = _gridSize.z;
                     _elements = new GridElement[x, y, z];
 
                     for (int i = 0; i < x; ++i)
@@ -174,6 +180,7 @@ namespace AStar
                 }
                 break;
             }
+            if(_checkWalkability) CheckGridWalkability();
         }
 
         [ContextMenu("RemoveGrid")]
@@ -192,6 +199,36 @@ namespace AStar
         {
             RemoveGrid();
             GenerateGrid();
+        }
+
+        public virtual void CheckGridWalkability()
+        {
+            switch (_gridType)
+            {
+                case GridType.TwoDimensional:
+                {
+                    float radius = _gridElementSize.x < _gridElementSize.y ? _gridElementSize.x : _gridElementSize.y;
+                    RaycastHit2D[] hits;
+                    foreach (GridElement element in _elements)
+                    {
+                        hits = Physics2D.CircleCastAll(element.transform.position, radius, Vector2.zero, 0f, _collisionLayers);
+                        element.Walkable = hits == null || hits.Length == 0;
+                    }
+                }
+                break;
+                case GridType.ThreeDimensional:
+                {
+                    float radius = _gridElementSize.x < _gridElementSize.y ? _gridElementSize.x : _gridElementSize.y;
+                    radius = radius > _gridElementSize.z ? _gridElementSize.z : radius;
+                    RaycastHit[] hits;
+                    foreach (GridElement element in _elements)
+                    {
+                        hits = Physics.SphereCastAll(element.transform.position, radius, Vector3.zero, 0f, _collisionLayers);
+                        element.Walkable = hits != null && hits.Length > 0;
+                    }
+                }
+                break;
+            }
         }
     }
 
@@ -225,6 +262,32 @@ namespace AStar
             this.x = x;
             this.y = y;
             this.z = z;
+        }
+
+        public IntVector3(IntVector3 other)
+        {
+            this.x = other.x;
+            this.y = other.y;
+            this.z = other.z;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null) return false;
+            IntVector3 objAsIntVec = obj as IntVector3;
+            if (objAsIntVec == null) return false;
+            return Equals(objAsIntVec);
+        }
+
+        public override int GetHashCode()
+        {
+            return x*y*z;
+        }
+
+        public bool Equals(IntVector3 other)
+        {
+            if (other == null) return false;
+            return x == other.x && y == other.y && z == other.z;
         }
     }
 }
