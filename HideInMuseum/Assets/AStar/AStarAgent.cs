@@ -24,6 +24,11 @@ namespace AStar
 
         [SerializeField]
         protected bool _useMyPositionAsStart;
+        public bool UseMyPositionAsStart
+        {
+            get { return _useMyPositionAsStart; }
+            set { _useMyPositionAsStart = value; }
+        }
 
         [SerializeField]
         protected Vector3 _startPosition;
@@ -67,6 +72,7 @@ namespace AStar
 
         public virtual void OnEnable()
         {
+            if (MyGrid == null) return;
             try
             {
                 switch (MyGrid.GridType)

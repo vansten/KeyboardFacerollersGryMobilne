@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using AStar;
 using UnityEngine.UI;
 
 public enum GameState
@@ -59,6 +60,8 @@ public class GameManager : Singleton<GameManager>
     #endregion
 
     #region Public variables
+
+    public Grid MainGrid;
 
     [Range(0.1f, 10.0f)]
     public float SatisfactionAmplitude = 5.0f;

@@ -27,6 +27,10 @@ public class GroupMovement : MonoBehaviour
     private float _tolerance;
 
     private List<Vector3> _path;
+    public List<Vector3> Path
+    {
+        get { return _path; }
+    } 
     private List<Vector3> _lineRendererPoints;
     private LineRenderer _lineRenderer;
     private Color _myLineColor;
@@ -64,12 +68,14 @@ public class GroupMovement : MonoBehaviour
     }
     private Vector3 _movementDelta;
 
+    protected SpriteRenderer _myRenderer;
+
     void OnEnable()
     {
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        if(sr != null && _sprites != null && _sprites.Count > 0)
+        SpriteRenderer _myRenderer = GetComponent<SpriteRenderer>();
+        if(_myRenderer != null && _sprites != null && _sprites.Count > 0)
         {
-            sr.sprite = _sprites[Random.Range(0, _sprites.Count)];
+            _myRenderer.sprite = _sprites[Random.Range(0, _sprites.Count)];
         }
 
         _lineRenderer = GetComponent<LineRenderer>();
@@ -119,17 +125,21 @@ public class GroupMovement : MonoBehaviour
             GameObject go = Instantiate(GroupMemberTemplate, previousInQueue.GetChild(0).position, previousInQueue.rotation) as GameObject;
             go.transform.parent = previousInQueue.parent;
             GroupMember member = go.GetComponent<GroupMember>();
-            if (member != null)
+            if (member == null)
             {
-                _groupMembers.Add(member);
-                member.GroupLeader = this;
-                member.PreviousMemberHook = previousInQueue.GetChild(0);
+                member = go.AddComponent<GroupMember>();
             }
+            _groupMembers.Add(member);
+            member.GroupLeader = this;
+            member.PreviousMemberHook = previousInQueue.GetChild(0);
+            member.MemberIndex = i + 1;
             SpriteRenderer sprite = go.GetComponent<SpriteRenderer>();
-            if (sprite != null)
+            if (sprite == null)
             {
-                sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
+                sprite = go.AddComponent<SpriteRenderer>();
+                sprite.sortingLayerID = _myRenderer.sortingLayerID;
             }
+            sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
         }
     }
 
@@ -154,26 +164,27 @@ public class GroupMovement : MonoBehaviour
         if(!_isMoving)
         {
             _standingTimer += Time.deltaTime;
-            if (_standingTimer > 2.0f)
+            if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
             {
-                if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
+                if (_minusParticle.isPlaying)
+                    _minusParticle.Stop();
+                if (_plusParticle.isStopped)
+                    _plusParticle.Play();
+                GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                if (_standingTimer > _visitRequiredTime)
                 {
-                    if(_minusParticle.isPlaying) _minusParticle.Stop();
-                    if(_plusParticle.isStopped) _plusParticle.Play();
-                    GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
-                    if (_standingTimer > _visitRequiredTime)
-                    {
-                        RoomCompleted();
-                    }
+                    RoomCompleted();
+                    _minusParticle.Stop();
+                    _plusParticle.Stop();
                 }
-                else
+            }
+            else
+            {
+                if (_standingTimer > 5.0f)
                 {
-                    if (_standingTimer > 5.0f)
-                    {
-                        if(_plusParticle.isPlaying) _plusParticle.Stop();
-                        if (_minusParticle.isStopped) _minusParticle.Play();
-                        GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
-                    }
+                    if(_plusParticle.isPlaying) _plusParticle.Stop();
+                    if (_minusParticle.isStopped) _minusParticle.Play();
+                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
                 }
             }
             return;                
@@ -325,6 +336,11 @@ public class GroupMovement : MonoBehaviour
             GameManager.Instance.SatisfactionLevel -= 0.75f;
         }
         ClearPath();
+
+        foreach (GroupMember member in _groupMembers)
+        {
+            member.ControlByAStar();
+        }
     }
 
     void OnTriggerEnter2D(Collider2D col)
