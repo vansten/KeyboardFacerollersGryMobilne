@@ -246,22 +246,15 @@ public class InputHandler : Singleton<InputHandler>
     {
         Vector3 cameraPosition = Camera.main.transform.position;
         //Adjust camera no matter how is the ortho size (showing only background (no clear color) indepentant to zooming, using constraints points isn't independant)
-        if (Camera.main.orthographicSize >= _zoomRange.y)
-        {
-            Camera.main.transform.position = new Vector3(0f, Mathf.Clamp(cameraPosition.y,-_yAxisCameraAbsolute, _yAxisCameraAbsolute), cameraPosition.z);
-        }
-        else
-        {
-            float size = Camera.main.orthographicSize;
-            float minX, minY, maxX, maxY;
-            minX = _aspectRatio * size - _halfBgSize - _cameraError;
-            maxX = _halfBgSize - _aspectRatio * size + _cameraError;
-            minY = size - _halfBgSize - _cameraError;
-            maxY = _halfBgSize - size + _cameraError;
-            Camera.main.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
-                                                            Mathf.Clamp(cameraPosition.y, minY, maxY),
-                                                            cameraPosition.z);            
-        }
+        float size = Camera.main.orthographicSize;
+        float minX, minY, maxX, maxY;
+        minX = _aspectRatio * size - _halfBgSize - _cameraError;
+        maxX = _halfBgSize - _aspectRatio * size + _cameraError;
+        minY = size - _halfBgSize - _cameraError;
+        maxY = _halfBgSize - size + _cameraError;
+        Camera.main.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
+                                                        Mathf.Clamp(cameraPosition.y, minY, maxY),
+                                                        cameraPosition.z);            
     }
 
     #endregion

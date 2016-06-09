@@ -4,12 +4,12 @@ using System.Collections;
 public enum RoomType
 {
     OldCameras = 0,
-    NewCameras,
-    Films,
+    CostumesAndSuits,
     Posters,
     Tapes,
     Animations, 
     Characters,
+    Entrance
 }
 
 public class Room : MonoBehaviour

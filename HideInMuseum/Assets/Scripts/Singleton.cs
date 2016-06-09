@@ -33,4 +33,9 @@ public class Singleton<T> : MonoBehaviour where T : Singleton<T>
         }
         _instance = (T)this;
     }
+
+    public static bool InstanceExists()
+    {
+        return _instance != null;
+    }
 }

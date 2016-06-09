@@ -87,9 +87,7 @@ public class GroupMovement : MonoBehaviour
         _myLineColor = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), 1.0f);
         _lineRenderer.SetColors(_myLineColor, _myLineColor);
         _lineRenderer.sortingOrder = 2;
-
-        transform.up = Vector2.up;
-        transform.position = Vector3.zero;
+        
         ClearPath();
 
         //Litle blah but why not
@@ -107,11 +105,24 @@ public class GroupMovement : MonoBehaviour
 
         GenerateGroup();
 
-        if(_roomsToVisit.Count == 0) GameManager.Instance.GenerateMission(this);
+        if (_roomsToVisit.Count == 0) GameManager.Instance.GenerateMission(this);
 
         _visitRequiredTime = (_groupMembers.Count + 1);
         _maxTimeToVisitTimer = 0.0f;
         _visitingApproperiateRoom = false;
+        _currentRoomType = RoomType.Entrance;
+    }
+
+    void OnDisable()
+    {
+        foreach(GroupMember gm in _groupMembers)
+        {
+            gm.gameObject.SetActive(false);
+        }
+
+        _minusParticle.Stop();
+        _plusParticle.Stop();
+        ClearPath();
     }
 
     void GenerateGroup()

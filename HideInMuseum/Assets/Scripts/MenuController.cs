@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class MenuController : ObjectBase
 {
@@ -8,9 +9,17 @@ public class MenuController : ObjectBase
     [SerializeField]
     private GameObject _mainMenuParent;
     [SerializeField]
-    private GameObject _settingsMenuParent;
+    private GameObject _highscoresMenuParent;
     [SerializeField]
-    private GameObject _aboutMenuParent;
+    private GameObject _exitMenuParent;
+    [SerializeField]
+    private Text _soundText;
+    [SerializeField]
+    private Color _soundOnColor;
+    [SerializeField]
+    private Color _soundOffColor;
+
+    private bool _soundOn;
 
     #endregion
 
@@ -31,15 +40,32 @@ public class MenuController : ObjectBase
         gameObject.SetActive(false);
     }
 
+    public override void OnEscapePressed()
+    {
+        if(_mainMenuParent.activeInHierarchy)
+        {
+            ExitClick();
+        }
+        else
+        {
+            BackToMenuClick();
+        }
+    }
+
     #endregion
 
     #region Unity methods
 
-    void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
+
+        _soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
+        _soundText.color = _soundOn ? _soundOnColor : _soundOffColor;
+        _soundText.text = _soundOn ? "ON" : "OFF";
         _mainMenuParent.SetActive(true);
-        _settingsMenuParent.SetActive(false);
-        _aboutMenuParent.SetActive(false);
+        _highscoresMenuParent.SetActive(false);
+        _exitMenuParent.SetActive(false);
     }
 
     #endregion
@@ -51,23 +77,41 @@ public class MenuController : ObjectBase
         GameManager.Instance.CurrentState = GameState.VisitStage;
     }
 
-    public void AboutClick()
+    public void ExitClick()
     {
         _mainMenuParent.SetActive(false);
-        _aboutMenuParent.SetActive(true);
+        _exitMenuParent.SetActive(true);
     }
 
-    public void SettingsClick()
+    public void HighscoresClick()
     {
         _mainMenuParent.SetActive(false);
-        _settingsMenuParent.SetActive(true);
+        _highscoresMenuParent.SetActive(true);
     }
 
     public void BackToMenuClick()
     {
         _mainMenuParent.SetActive(true);
-        _aboutMenuParent.SetActive(false);
-        _settingsMenuParent.SetActive(false);
+        _exitMenuParent.SetActive(false);
+        _highscoresMenuParent.SetActive(false);
+    }
+
+    public void SoundOnOffClick()
+    {
+        _soundOn = !_soundOn;
+        _soundText.color = _soundOn ? _soundOnColor : _soundOffColor;
+        _soundText.text = _soundOn ? "ON" : "OFF";
+        PlayerPrefs.SetInt("SoundOn", _soundOn ? 1 : 0);
+    }
+
+    public void ExitYesClick()
+    {
+        Application.Quit();
+    }
+
+    public void ExitNoClick()
+    {
+        BackToMenuClick();
     }
 
     #endregion

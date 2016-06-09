@@ -71,10 +71,20 @@ public class GameManager : Singleton<GameManager>
     public Action OnMenuBegin;
     public Action OnStatisticsWindowsBegin;
     public Action OnPaused;
+    public Action OnUnpaused;
+    public Action OnEscapePressed;
 
     #endregion
 
     #region Properties
+
+    public GameState PreviousState
+    {
+        get
+        {
+            return _previousState;
+        }
+    }
 
     public GameState CurrentState
     {
@@ -84,13 +94,21 @@ public class GameManager : Singleton<GameManager>
         }
         set
         {
+            if(_currentState == value)
+            {
+                return;
+            }
+
             _previousState = _currentState;
             _currentState = value;
             switch(_currentState)
             {
                 case GameState.DecoratorStage:
                     Time.timeScale = 1.0f;
-                    StageTime = _decoratorStageTime;
+                    if(_previousState != GameState.Paused)
+                    {
+                        StageTime = _decoratorStageTime;
+                    }
                     _museumObject.SetActive(true);
                     if(OnDecoratorStageBegin != null)
                     {
@@ -99,7 +117,11 @@ public class GameManager : Singleton<GameManager>
                     break;
                 case GameState.VisitStage:
                     Time.timeScale = 1.0f;
-                    StageTime = _visitStageTime;
+                    if(_previousState != GameState.Paused)
+                    {
+                        StageTime = _visitStageTime;
+                        GroupsHandled = 0;
+                    }
                     _museumObject.SetActive(true);
                     SatisfactionLevel = 0.0f;
                     if (OnVisitStageBegin != null)
@@ -176,10 +198,23 @@ public class GameManager : Singleton<GameManager>
                 }
                 else if(_currentState == GameState.VisitStage)
                 {
+
                     CurrentState = GameState.StatisticsWindow;
                 }
             }
         }
+    }
+
+    public float TotalMoney
+    {
+        get;
+        set;
+    }
+
+    public int GroupsHandled
+    {
+        get;
+        set;
     }
 
     #endregion
@@ -190,6 +225,8 @@ public class GameManager : Singleton<GameManager>
     {
         CurrentState = GameState.Menu;
         _counterText.gameObject.SetActive(false);
+        TotalMoney = PlayerPrefs.GetFloat("TotalMoneyEarned", 0.0f);
+        Debug.Log(TotalMoney);
     }
 
     void Update()
@@ -201,21 +238,14 @@ public class GameManager : Singleton<GameManager>
 
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            switch (_currentState)
-            {
-                case GameState.Menu:
-                    Application.Quit();
-                    break;
-                case GameState.DecoratorStage:
-                case GameState.StatisticsWindow:
-                case GameState.VisitStage:
-                    CurrentState = GameState.Menu;
-                    break;
-                case GameState.Paused:
-                    Unpause();
-                    break;
-            }
+            OnEscapePressed();
         }
+    }
+
+    void OnApplicationQuit()
+    {
+        PlayerPrefs.SetFloat("TotalMoneyEarned", TotalMoney);
+        PlayerPrefs.Save();
     }
 
     IEnumerator OnApplicationPause(bool pauseStatus)
@@ -246,12 +276,12 @@ public class GameManager : Singleton<GameManager>
     public void GenerateMission(GroupMovement group)
     {
         group.RoomsToVisit.Clear();
-        RoomType random = (RoomType) UnityEngine.Random.Range(0, 6);
+        RoomType random = (RoomType) UnityEngine.Random.Range(0, 5);
         for (int i = 0; i < group.GroupCount + 1; ++i)
         {
             while (group.RoomsToVisit.Contains(random))
             {
-                random = (RoomType)UnityEngine.Random.Range(0, 7);
+                random = (RoomType)UnityEngine.Random.Range(0, 6);
             }
             group.RoomsToVisit.Add(random);            
         }
@@ -305,9 +335,11 @@ public class GameManager : Singleton<GameManager>
 
     IEnumerator UnpauseCoroutine()
     {
+
+        OnUnpaused();
+
         if (_previousState == GameState.DecoratorStage || _previousState == GameState.VisitStage)
         {
-
             Vector3 initScale = Vector3.one * 0.75f;
             Vector3 targetScale = Vector3.one * 1.25f;
             float timer = 0.0f;

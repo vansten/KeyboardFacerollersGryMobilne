@@ -28,19 +28,30 @@ public class PauseStageController : ObjectBase
         gameObject.SetActive(false);
     }
 
+    public override void OnEscapePressed()
+    {
+        ResumeButtonClick();
+    }
+
+    public override void OnUnpaused()
+    {
+        gameObject.SetActive(false);
+    }
+
     public void ResumeButtonClick()
     {
         GameManager.Instance.Unpause();
-        gameObject.SetActive(false);
     }
 
     public void RestartButtonClick()
     {
         GameManager.Instance.RestartStage();
+        gameObject.SetActive(false);
     }
 
     public void MenuButtonClick()
     {
         GameManager.Instance.CurrentState = GameState.Menu;
+        gameObject.SetActive(false);
     }
 }

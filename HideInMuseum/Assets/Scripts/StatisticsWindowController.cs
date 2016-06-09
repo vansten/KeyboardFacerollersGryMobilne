@@ -14,8 +14,6 @@ public class StatisticsWindowController : ObjectBase
     private Text _satisfactionLevelText;
     [SerializeField]
     private Text _moneyEarnedText;
-    [SerializeField]
-    private Text _pointsText;
 
     public override void OnDecoratorStagetBegin()
     {
@@ -32,6 +30,11 @@ public class StatisticsWindowController : ObjectBase
         gameObject.SetActive(false);
     }
 
+    public override void OnEscapePressed()
+    {
+        GameManager.Instance.CurrentState = GameState.Menu;
+    }
+
     public override void OnStatisticsWindowBegin()
     {
         bool win = GameManager.Instance.SatisfactionLevel > -5.0f;
@@ -41,8 +44,10 @@ public class StatisticsWindowController : ObjectBase
         _timeLeftText.text = "Time left: " + Helpers.ConvertSecondsToTimeText(GameManager.Instance.TimeLeft);
         _groupsHandledText.text = "Groups handled: " + 0;
         _satisfactionLevelText.text = "Satisfaction level: " + GameManager.Instance.SatisfactionLevel.ToString("0.00");
-        _moneyEarnedText.text = "Money earned: $" + 0;
-        _pointsText.text = "Points: " + 0;
+        float multiplier = 1.0f / (GameManager.Instance.SatisfactionAmplitude * 2.0f);
+        float moneyEarned = Mathf.Lerp(0.0f, 50.0f * GameManager.Instance.GroupsHandled, (GameManager.Instance.SatisfactionLevel + GameManager.Instance.SatisfactionAmplitude) * multiplier);
+        GameManager.Instance.TotalMoney += moneyEarned;
+        _moneyEarnedText.text = "Money earned: $" + moneyEarned.ToString("0.00");
 
         gameObject.SetActive(true);
     }
