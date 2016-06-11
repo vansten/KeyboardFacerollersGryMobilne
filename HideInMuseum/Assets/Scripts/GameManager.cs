@@ -21,8 +21,17 @@ public enum SatisfactionStage
     SS_Third
 }
 
+[Serializable]
+public class RoomIcon
+{
+    public RoomType Type;
+    public Sprite Icon;
+}
+
 public static class Helpers
 {
+    private static Dictionary<char, int> _hexToDec = new Dictionary<char, int>();
+
     public static string ConvertSecondsToTimeText(float secondsLeft)
     {
         string s = "";
@@ -32,6 +41,57 @@ public static class Helpers
         s += ":";
         s += seconds.ToString("00");
         return s;
+    }
+    
+    public static Color FromHex(string hex)
+    {
+        if(_hexToDec == null || _hexToDec.Count == 0)
+        {
+            _hexToDec.Add('0', 0);
+            _hexToDec.Add('1', 1);
+            _hexToDec.Add('2', 2);
+            _hexToDec.Add('3', 3);
+            _hexToDec.Add('4', 4);
+            _hexToDec.Add('5', 5);
+            _hexToDec.Add('6', 6);
+            _hexToDec.Add('7', 7);
+            _hexToDec.Add('8', 8);
+            _hexToDec.Add('9', 9);
+            _hexToDec.Add('A', 10);
+            _hexToDec.Add('B', 11);
+            _hexToDec.Add('C', 12);
+            _hexToDec.Add('D', 13);
+            _hexToDec.Add('E', 14);
+            _hexToDec.Add('F', 15);
+            _hexToDec.Add('a', 10);
+            _hexToDec.Add('b', 11);
+            _hexToDec.Add('c', 12);
+            _hexToDec.Add('d', 13);
+            _hexToDec.Add('e', 14);
+            _hexToDec.Add('f', 15);
+        }
+
+        bool alphaIncluded = hex.Length == 8;
+        string r = hex.Substring(0, 2);
+        string g = hex.Substring(2, 2);
+        string b = hex.Substring(4, 2);
+
+        float red = 0.0f;
+        float green = 0.0f;
+        float blue = 0.0f;
+
+        red = (_hexToDec[r[0]] * 16.0f + _hexToDec[r[1]]) / 255.0f;
+        green = (_hexToDec[g[0]] * 16.0f + _hexToDec[g[1]]) / 255.0f;
+        blue = (_hexToDec[b[0]] * 16.0f + _hexToDec[b[1]]) / 255.0f;
+
+        float alpha = 1.0f;
+        if (alphaIncluded)
+        {
+            string a = hex.Substring(6, 2);
+            alpha = (_hexToDec[a[0]] * 16.0f + _hexToDec[a[1]]) / 255.0f;
+        }
+
+        return new Color(red, green, blue, alpha);
     }
 }
 
@@ -62,6 +122,7 @@ public class GameManager : Singleton<GameManager>
     #region Public variables
 
     public Grid MainGrid;
+    public List<RoomIcon> Rooms;
 
     [Range(0.1f, 10.0f)]
     public float SatisfactionAmplitude = 5.0f;
@@ -121,9 +182,9 @@ public class GameManager : Singleton<GameManager>
                     {
                         StageTime = _visitStageTime;
                         GroupsHandled = 0;
+                        SatisfactionLevel = 0.0f;
                     }
                     _museumObject.SetActive(true);
-                    SatisfactionLevel = 0.0f;
                     if (OnVisitStageBegin != null)
                     {
                         OnVisitStageBegin();
@@ -198,8 +259,7 @@ public class GameManager : Singleton<GameManager>
                 }
                 else if(_currentState == GameState.VisitStage)
                 {
-
-                    CurrentState = GameState.StatisticsWindow;
+                    //CurrentState = GameState.StatisticsWindow;
                 }
             }
         }
@@ -268,9 +328,25 @@ public class GameManager : Singleton<GameManager>
 
     #region GameManager methods
 
+    public Sprite GetSpriteByRoomType(RoomType rt)
+    {
+        foreach(RoomIcon ri in Rooms)
+        {
+            if(ri.Type == rt)
+            {
+                return ri.Icon;
+            }
+        }
+
+        return null;
+    }
+
     public void UpdateGroupMissionsDispaly(GroupMovement group)
     {
-        _visitStageController.FillRoomsToVisit(group);
+        if(InputHandler.Instance.CurrentGroup == group)
+        {
+            _visitStageController.FillRoomsToVisit(group);
+        }
     }
 
     public void GenerateMission(GroupMovement group)
@@ -370,13 +446,6 @@ public class GameManager : Singleton<GameManager>
         }
 
         CurrentState = _previousState;
-    }
-
-    public void RestartStage()
-    {
-        GameState stateToRestart = _previousState;
-        CurrentState = GameState.Menu;
-        CurrentState = stateToRestart;
     }
 
     #endregion

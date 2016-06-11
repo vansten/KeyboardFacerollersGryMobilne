@@ -113,7 +113,7 @@ public class InputHandler : Singleton<InputHandler>
             _positionChange *= 0.1f * Camera.main.orthographicSize;
             _prevPosition = Input.mousePosition;
             _rayToCast = Camera.main.ScreenPointToRay(Input.mousePosition);
-            _continuePath = true;
+            CastRayContinue();
         }
 
         if(Input.GetMouseButtonUp(0))
@@ -147,7 +147,7 @@ public class InputHandler : Singleton<InputHandler>
             else if(t0.phase == TouchPhase.Moved)
             {
                 _rayToCast = Camera.main.ScreenPointToRay(t0.position);
-                _continuePath = true;
+                CastRayContinue();
             }
 
             _currentPosition = t0.position;
@@ -181,24 +181,37 @@ public class InputHandler : Singleton<InputHandler>
     void CastRay()
     {
         //Do raycast and check if we want to change mode
-        RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction);
-        if(hit.collider != null && hit.collider.gameObject.activeInHierarchy)
+        RaycastHit2D[] hits = Physics2D.RaycastAll(_rayToCast.origin, _rayToCast.direction, float.MaxValue, 1 << LayerMask.NameToLayer("GroupLeader"));
+
+        _currentMode = InputMode.CameraControls;
+
+        foreach (RaycastHit2D hit in hits)
         {
-            //Check if it's character
-            _currentGroup = hit.collider.GetComponent<GroupMovement>();
-            if(_currentGroup != null)
+            if (hit.collider != null && hit.collider.gameObject.activeInHierarchy)
             {
-                _currentGroup.StartPath();
-                _currentMode = InputMode.GroupControls;
-            }
-            else
-            {
-                _currentMode = InputMode.CameraControls;
+                //Check if it's character
+                _currentGroup = hit.collider.GetComponent<GroupMovement>();
+                if (_currentGroup != null)
+                {
+                    _currentGroup.StartPath();
+                    _currentMode = InputMode.GroupControls;
+                    break;
+                }
             }
         }
-        else
+
+        if(_currentMode == InputMode.CameraControls)
         {
-            _currentMode = InputMode.CameraControls;
+            _currentGroup = null;
+        }
+    }
+
+    void CastRayContinue()
+    {
+        RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction, float.MaxValue, 1 << LayerMask.NameToLayer("Museum"));
+        if(hit.collider != null)
+        {
+            _continuePath = true;
         }
     }
 
@@ -219,6 +232,7 @@ public class InputHandler : Singleton<InputHandler>
     {
         if(_currentGroup == null)
         {
+            _currentMode = InputMode.CameraControls;
             return;
         }
 

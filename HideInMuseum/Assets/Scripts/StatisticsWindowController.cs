@@ -7,8 +7,6 @@ public class StatisticsWindowController : ObjectBase
     [SerializeField]
     private Text _failedSucceededText;
     [SerializeField]
-    private Text _timeLeftText;
-    [SerializeField]
     private Text _groupsHandledText;
     [SerializeField]
     private Text _satisfactionLevelText;
@@ -37,17 +35,16 @@ public class StatisticsWindowController : ObjectBase
 
     public override void OnStatisticsWindowBegin()
     {
-        bool win = GameManager.Instance.SatisfactionLevel > -5.0f;
+        bool win = GameManager.Instance.SatisfactionLevel > -5.0f && GameManager.Instance.GroupsHandled > 0;
         _failedSucceededText.text = win ? "SUCCEEDED" : "FAILED";
-        _failedSucceededText.color = win ? Color.green : Color.red;
+        _failedSucceededText.color = win ? Helpers.FromHex("a1ff64") : Helpers.FromHex("ff6666"); //green : red
 
-        _timeLeftText.text = "Time left: " + Helpers.ConvertSecondsToTimeText(GameManager.Instance.TimeLeft);
-        _groupsHandledText.text = "Groups handled: " + 0;
-        _satisfactionLevelText.text = "Satisfaction level: " + GameManager.Instance.SatisfactionLevel.ToString("0.00");
+        _groupsHandledText.text = GameManager.Instance.GroupsHandled.ToString();
+        _satisfactionLevelText.text = SatisfactionToString(GameManager.Instance.SatisfactionLevel);
         float multiplier = 1.0f / (GameManager.Instance.SatisfactionAmplitude * 2.0f);
         float moneyEarned = Mathf.Lerp(0.0f, 50.0f * GameManager.Instance.GroupsHandled, (GameManager.Instance.SatisfactionLevel + GameManager.Instance.SatisfactionAmplitude) * multiplier);
         GameManager.Instance.TotalMoney += moneyEarned;
-        _moneyEarnedText.text = "Money earned: $" + moneyEarned.ToString("0.00");
+        _moneyEarnedText.text = "$" + moneyEarned.ToString("0.00");
 
         gameObject.SetActive(true);
     }
@@ -60,5 +57,29 @@ public class StatisticsWindowController : ObjectBase
     public void BackToMenu()
     {
         GameManager.Instance.CurrentState = GameState.Menu;
+    }
+
+    private string SatisfactionToString(float level)
+    {
+        if(level < -4.5f)
+        {
+            return "Very unhappy";
+        }
+        else if(level < -2.5f)
+        {
+            return "Unhappy";
+        }
+        else if(level < 2.5f)
+        {
+            return "Neutral";
+        }
+        else if(level < 4.5f)
+        {
+            return "Happy";
+        }
+        else
+        {
+            return "Very happy";
+        }
     }
 }

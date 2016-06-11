@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: 27dc5e9a6cd5a0a45bfec4ccdcaed714
-timeCreated: 1465490531
+timeCreated: 1465638994
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -33,6 +33,12 @@ TextureImporter:
     21300052: kamera4
     21300054: kamera5
     21300056: kamera6
+    21300058: kostium1
+    21300060: kostium2
+    21300062: kostium3
+    21300064: kostium4
+    21300066: tv1
+    21300068: tv2
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
@@ -544,6 +550,97 @@ TextureImporter:
         - {x: -33, y: -35.5}
         - {x: 33, y: -35.5}
         - {x: 33, y: 35.5}
+    - name: kostium1
+      rect:
+        serializedVersion: 2
+        x: 29
+        y: 177
+        width: 72
+        height: 99
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -36, y: 49.5}
+        - {x: -36, y: -49.5}
+        - {x: 36, y: -49.5}
+        - {x: 36, y: 31.5}
+        - {x: 32, y: 49.5}
+    - name: kostium2
+      rect:
+        serializedVersion: 2
+        x: 151
+        y: 211
+        width: 37
+        height: 33
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -18.5, y: 16.5}
+        - {x: -18.5, y: -16.5}
+        - {x: 18.5, y: -16.5}
+        - {x: 18.5, y: 16.5}
+    - name: kostium3
+      rect:
+        serializedVersion: 2
+        x: 240
+        y: 174
+        width: 56
+        height: 97
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -28, y: 48.5}
+        - {x: -28, y: -48.5}
+        - {x: 28, y: -48.5}
+        - {x: 28, y: 48.5}
+    - name: kostium4
+      rect:
+        serializedVersion: 2
+        x: 342
+        y: 185
+        width: 60
+        height: 80
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -30, y: 40}
+        - {x: -30, y: -40}
+        - {x: 30, y: -40}
+        - {x: 30, y: 40}
+    - name: tv1
+      rect:
+        serializedVersion: 2
+        x: 455
+        y: 202
+        width: 73
+        height: 60
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -36.5, y: 30}
+        - {x: -36.5, y: -30}
+        - {x: 36.5, y: -30}
+        - {x: 36.5, y: 30}
+    - name: tv2
+      rect:
+        serializedVersion: 2
+        x: 578
+        y: 197
+        width: 62
+        height: 64
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -31, y: 32}
+        - {x: -31, y: -32}
+        - {x: 31, y: -32}
+        - {x: 31, y: 32}
     outline: []
   spritePackingTag: 
   userData: 

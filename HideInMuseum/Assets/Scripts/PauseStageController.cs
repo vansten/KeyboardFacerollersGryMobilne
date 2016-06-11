@@ -43,12 +43,6 @@ public class PauseStageController : ObjectBase
         GameManager.Instance.Unpause();
     }
 
-    public void RestartButtonClick()
-    {
-        GameManager.Instance.RestartStage();
-        gameObject.SetActive(false);
-    }
-
     public void MenuButtonClick()
     {
         GameManager.Instance.CurrentState = GameState.Menu;

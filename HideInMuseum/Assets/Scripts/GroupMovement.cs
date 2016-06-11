@@ -52,6 +52,10 @@ public class GroupMovement : MonoBehaviour
     protected float _visitRequiredTime;
     [SerializeField]
     protected RoomType _currentRoomType;
+    public RoomType CurrentRoomType
+    {
+        get { return _currentRoomType; }
+    }
 
     private ParticleSystem _plusParticle;
     private ParticleSystem _minusParticle;
@@ -117,7 +121,10 @@ public class GroupMovement : MonoBehaviour
     {
         foreach(GroupMember gm in _groupMembers)
         {
-            gm.gameObject.SetActive(false);
+            if(gm != null)
+            {
+                gm.gameObject.SetActive(false);
+            }
         }
 
         _minusParticle.Stop();

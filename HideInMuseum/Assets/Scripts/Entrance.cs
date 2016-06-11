@@ -11,10 +11,16 @@ public class Entrance : MonoBehaviour
         if(col.gameObject.layer == LayerMask.NameToLayer("GroupLeader"))
         {
             GroupMovement gm = col.gameObject.GetComponent<GroupMovement>();
-            if(gm.RoomsToVisit.Count == 0)
+            if(gm != null)
             {
-                VisitStage.GroupLeft();
-                gm.gameObject.SetActive(false);
+                if(gm.RoomsToVisit.Count == 0)
+                {
+                    VisitStage.GroupLeft(gm);
+                }
+                else if(gm.CurrentRoomType != RoomType.Entrance)
+                {
+                    gm.ClearPath();
+                }
             }
         }
     }
