@@ -12,6 +12,8 @@ public class InputHandler : Singleton<InputHandler>
     #region Private Variables
 
     [SerializeField]
+    private Camera _mainCamera;
+    [SerializeField]
     private Vector2 _zoomRange;
     [SerializeField]
     private float _yAxisCameraAbsolute;
@@ -52,7 +54,7 @@ public class InputHandler : Singleton<InputHandler>
     {
         _aspectRatio = (float)Screen.width / (float)Screen.height;
         _halfBgSize = 0.5f * _bgSize;
-        Camera.main.orthographicSize = _zoomRange.y;
+        _mainCamera.orthographicSize = (_zoomRange.y + _zoomRange.x) * 0.5f;
     }
 
     void Update()
@@ -99,20 +101,19 @@ public class InputHandler : Singleton<InputHandler>
 
         if (Input.GetMouseButtonDown(0))
         {
-            _rayToCast = Camera.main.ScreenPointToRay(Input.mousePosition);
+            _rayToCast = _mainCamera.ScreenPointToRay(Input.mousePosition);
             CastRay();
             _prevPosition = Input.mousePosition;
         }
 
         float wheelValue = Input.mouseScrollDelta.y;
-        Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize - wheelValue * _zoomStep, _zoomRange.x, _zoomRange.y);
+        _mainCamera.orthographicSize = Mathf.Clamp(_mainCamera.orthographicSize - wheelValue * _zoomStep, _zoomRange.x, _zoomRange.y);
 
         if(Input.GetMouseButton(0))
         {
             _positionChange = Input.mousePosition - _prevPosition;
-            _positionChange *= 0.1f * Camera.main.orthographicSize;
             _prevPosition = Input.mousePosition;
-            _rayToCast = Camera.main.ScreenPointToRay(Input.mousePosition);
+            _rayToCast = _mainCamera.ScreenPointToRay(Input.mousePosition);
             CastRayContinue();
         }
 
@@ -137,7 +138,7 @@ public class InputHandler : Singleton<InputHandler>
             Touch t0 = touches[0];
             if (t0.phase == TouchPhase.Began)
             {
-                _rayToCast = Camera.main.ScreenPointToRay(t0.position);
+                _rayToCast = _mainCamera.ScreenPointToRay(t0.position);
                 CastRay();
             }
             else if(t0.phase == TouchPhase.Canceled || t0.phase == TouchPhase.Ended)
@@ -146,7 +147,7 @@ public class InputHandler : Singleton<InputHandler>
             }
             else if(t0.phase == TouchPhase.Moved)
             {
-                _rayToCast = Camera.main.ScreenPointToRay(t0.position);
+                _rayToCast = _mainCamera.ScreenPointToRay(t0.position);
                 CastRayContinue();
             }
 
@@ -169,7 +170,7 @@ public class InputHandler : Singleton<InputHandler>
             float currentDistanceBetweenTouches = Vector3.Distance(currentT1Position, currentT2Position);
             float prevDistanceBetweenTouches = Vector3.Distance(prevT1Position, prevT2Position);
             float distanceChange = prevDistanceBetweenTouches - currentDistanceBetweenTouches;
-            Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Mathf.Sign(distanceChange) * _zoomStep, _zoomRange.x, _zoomRange.y);
+            _mainCamera.orthographicSize = Mathf.Clamp(_mainCamera.orthographicSize + Mathf.Sign(distanceChange) * _zoomStep, _zoomRange.x, _zoomRange.y);
             _positionChange = Vector3.zero;
         }
     }
@@ -217,14 +218,21 @@ public class InputHandler : Singleton<InputHandler>
 
     void UpdateCameraControls()
     {
-        _positionChange /= Camera.main.orthographicSize;
-        if(_invertedControls)
+        float multiplier = 8.0f + (8.0f - _mainCamera.orthographicSize);
+        if (multiplier < 1.0f)
         {
-            Camera.main.transform.position -= _positionChange;
+            multiplier = 1.0f;
+        }
+
+        _positionChange /= multiplier;
+
+        if (_invertedControls)
+        {
+            _mainCamera.transform.position -= _positionChange;
         }
         else
         {
-            Camera.main.transform.position += _positionChange;
+            _mainCamera.transform.position += _positionChange;
         }
     }
 
@@ -252,21 +260,21 @@ public class InputHandler : Singleton<InputHandler>
                 }
             }
 
-            _currentGroup.ContinuePath(Camera.main.ScreenToWorldPoint(_currentPosition));
+            _currentGroup.ContinuePath(_mainCamera.ScreenToWorldPoint(_currentPosition));
         }
     }
 
     void AdjustCameraTransform()
     {
-        Vector3 cameraPosition = Camera.main.transform.position;
+        Vector3 cameraPosition = _mainCamera.transform.position;
         //Adjust camera no matter how is the ortho size (showing only background (no clear color) indepentant to zooming, using constraints points isn't independant)
-        float size = Camera.main.orthographicSize;
+        float size = _mainCamera.orthographicSize;
         float minX, minY, maxX, maxY;
         minX = _aspectRatio * size - _halfBgSize - _cameraError;
         maxX = _halfBgSize - _aspectRatio * size + _cameraError;
         minY = size - _halfBgSize - _cameraError;
         maxY = _halfBgSize - size + _cameraError;
-        Camera.main.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
+        _mainCamera.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
                                                         Mathf.Clamp(cameraPosition.y, minY, maxY),
                                                         cameraPosition.z);            
     }

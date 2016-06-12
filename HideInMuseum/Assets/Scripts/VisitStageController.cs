@@ -111,8 +111,10 @@ public class VisitStageController : ObjectBase
             else
             {
                 _roomsToVisitLogos[i].SetActive(true);
-                //_roomsToVisitLogos[i].GetComponentInChildren<Text>().text = GetRoomShortName(group.RoomsToVisit[rooms - j]);                
-                _roomsToVisitLogos[i].GetComponent<Image>().sprite = GameManager.Instance.GetSpriteByRoomType(group.RoomsToVisit[rooms - j]);
+                //_roomsToVisitLogos[i].GetComponentInChildren<Text>().text = GetRoomShortName(group.RoomsToVisit[rooms - j]);               
+                Image currentImage = _roomsToVisitLogos[i].GetComponent<Image>();
+                currentImage.sprite = GameManager.Instance.GetSpriteByRoomType(group.RoomsToVisit[rooms - j]);
+                currentImage.color = group.MyColor;
             }
         }
         _goToExitText.SetActive(rooms == 0);

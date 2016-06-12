@@ -227,6 +227,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 3ea6b5882ad922747b177ce96d985908, type: 3}
   - {fileID: 21300000, guid: f37d6601281fbb84b810347172a3a4da, type: 3}
   - {fileID: 21300000, guid: ee1d2c2567aeaa245ba33fc797ffc2d5, type: 3}
+  _highlightSprite: {fileID: 21200516}
   _speed: 3
   _tolerance: 0.3
   _maxTimeToVisitRoom: 20
@@ -3300,8 +3301,8 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 2051213183
   m_SortingOrder: -1
-  m_Sprite: {fileID: 21300000, guid: b0a56d7c7a8f0134ba19faa93807dd3c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 0.353}
+  m_Sprite: {fileID: 21300000, guid: 4b2a151a58088964183616685426afa1, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.216}
   m_FlipX: 0
   m_FlipY: 0
 --- !u!212 &21220108

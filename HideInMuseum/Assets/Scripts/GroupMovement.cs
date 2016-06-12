@@ -22,6 +22,8 @@ public class GroupMovement : MonoBehaviour
     [SerializeField]
     private List<Sprite> _sprites;
     [SerializeField]
+    private SpriteRenderer _highlightSprite;
+    [SerializeField]
     private float _speed;
     [SerializeField]
     private float _tolerance;
@@ -34,6 +36,10 @@ public class GroupMovement : MonoBehaviour
     private List<Vector3> _lineRendererPoints;
     private LineRenderer _lineRenderer;
     private Color _myLineColor;
+    public Color MyColor
+    {
+        get { return _myLineColor; }
+    }
     private Color _colorToSet = Color.red;
     private Vector3 _prevPosition;
     private Vector3 _targetUp;
@@ -89,6 +95,9 @@ public class GroupMovement : MonoBehaviour
         }
         _lineRenderer.SetWidth(0.5f, 0.5f);
         _myLineColor = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), 1.0f);
+        Color highlightColor = _myLineColor;
+        highlightColor.a = 0.6f;
+        _highlightSprite.color = highlightColor;
         _lineRenderer.SetColors(_myLineColor, _myLineColor);
         _lineRenderer.sortingOrder = 2;
         
