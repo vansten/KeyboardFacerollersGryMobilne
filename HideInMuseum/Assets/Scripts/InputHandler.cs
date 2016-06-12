@@ -168,7 +168,7 @@ public class InputHandler : Singleton<InputHandler>
             Vector3 prevT2Position = t2.position - t2.deltaPosition;
             float currentDistanceBetweenTouches = Vector3.Distance(currentT1Position, currentT2Position);
             float prevDistanceBetweenTouches = Vector3.Distance(prevT1Position, prevT2Position);
-            float distanceChange = currentDistanceBetweenTouches - prevDistanceBetweenTouches;
+            float distanceChange = prevDistanceBetweenTouches - currentDistanceBetweenTouches;
             Camera.main.orthographicSize = Mathf.Clamp(Camera.main.orthographicSize + Mathf.Sign(distanceChange) * _zoomStep, _zoomRange.x, _zoomRange.y);
             _positionChange = Vector3.zero;
         }

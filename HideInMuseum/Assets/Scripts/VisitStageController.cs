@@ -25,6 +25,8 @@ public class VisitStageController : ObjectBase
     [SerializeField]
     protected GameObject[] _roomsToVisitLogos;
     [SerializeField]
+    protected GameObject _goToExitText;
+    [SerializeField]
     private Text _timerText;
     [SerializeField]
     private float _spawnCooldown;
@@ -113,6 +115,7 @@ public class VisitStageController : ObjectBase
                 _roomsToVisitLogos[i].GetComponent<Image>().sprite = GameManager.Instance.GetSpriteByRoomType(group.RoomsToVisit[rooms - j]);
             }
         }
+        _goToExitText.SetActive(rooms == 0);
     }
 
     string GetRoomShortName(RoomType rt)

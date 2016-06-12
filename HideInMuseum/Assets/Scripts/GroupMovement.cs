@@ -157,7 +157,7 @@ public class GroupMovement : MonoBehaviour
                 sprite = go.AddComponent<SpriteRenderer>();
                 sprite.sortingLayerID = _myRenderer.sortingLayerID;
             }
-            sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
+            sprite.sprite = _sprites[Random.Range(0, 7)];
         }
     }
 
