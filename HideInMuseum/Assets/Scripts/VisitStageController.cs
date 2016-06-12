@@ -29,12 +29,13 @@ public class VisitStageController : ObjectBase
     [SerializeField]
     private Text _timerText;
     [SerializeField]
-    private float _spawnCooldown;
+    private Vector2 _spawnCooldownRange;
 
     private List<GroupMovement> _groupsSpawned = new List<GroupMovement>();
     protected InputMode _previousInputMode = InputMode.CameraControls;
     protected GroupMovement _previousGroupMovement = null;
     private float _timer;
+    private float _spawnCooldown;
     private bool _coroutineStarted = false;
     private bool _doorClosed = false;
 
@@ -83,9 +84,10 @@ public class VisitStageController : ObjectBase
             _groupsSpawned = new List<GroupMovement>();
             SpawnNewGroup();
             _coroutineStarted = false;
+            _timer = 0.0f;
+            _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
         }
 
-        _timer = 0.0f;
         _UIGameObject.SetActive(true);
     }
 
@@ -235,12 +237,13 @@ public class VisitStageController : ObjectBase
 
     void SpawnNewGroup()
     {
-        if(_groupsSpawned.Count >= 3)
+        if(_groupsSpawned.Count >= GameManager.Instance.MaxGroupCount)
         {
             return;
         }
 
         _timer = 0.0f;
+        _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
         GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position, Quaternion.Euler(0, 0, 90));
         _groupsSpawned.Add(gm);
     }

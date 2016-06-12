@@ -123,6 +123,7 @@ public class GameManager : Singleton<GameManager>
 
     public Grid MainGrid;
     public List<RoomIcon> Rooms;
+    public int MaxGroupCount;
 
     [Range(0.1f, 10.0f)]
     public float SatisfactionAmplitude = 5.0f;

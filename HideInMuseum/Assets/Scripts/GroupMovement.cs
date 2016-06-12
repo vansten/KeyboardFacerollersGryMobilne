@@ -96,7 +96,7 @@ public class GroupMovement : MonoBehaviour
         _lineRenderer.SetWidth(0.5f, 0.5f);
         _myLineColor = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), 1.0f);
         Color highlightColor = _myLineColor;
-        highlightColor.a = 0.6f;
+        highlightColor.a = 0.5f;
         _highlightSprite.color = highlightColor;
         _lineRenderer.SetColors(_myLineColor, _myLineColor);
         _lineRenderer.sortingOrder = 2;
