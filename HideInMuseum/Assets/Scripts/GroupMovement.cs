@@ -188,6 +188,12 @@ public class GroupMovement : MonoBehaviour
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
         }
 
+        Room currentRoom = GameManager.Instance.GetRoomByRoomType(_currentRoomType);
+        if(currentRoom != null && currentRoom.IsQTEActive)
+        {
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, transform.position);
+        }
+
         if(!_isMoving)
         {
             _standingTimer += Time.deltaTime;

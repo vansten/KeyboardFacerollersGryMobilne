@@ -14,6 +14,8 @@ public class InputHandler : Singleton<InputHandler>
     [SerializeField]
     private Camera _mainCamera;
     [SerializeField]
+    private LayerMask _clickableLayers;
+    [SerializeField]
     private Vector2 _zoomRange;
     [SerializeField]
     private float _yAxisCameraAbsolute;
@@ -182,7 +184,7 @@ public class InputHandler : Singleton<InputHandler>
     void CastRay()
     {
         //Do raycast and check if we want to change mode
-        RaycastHit2D[] hits = Physics2D.RaycastAll(_rayToCast.origin, _rayToCast.direction, float.MaxValue, 1 << LayerMask.NameToLayer("GroupLeader"));
+        RaycastHit2D[] hits = Physics2D.RaycastAll(_rayToCast.origin, _rayToCast.direction, float.MaxValue, _clickableLayers);
 
         _currentMode = InputMode.CameraControls;
 
@@ -197,6 +199,14 @@ public class InputHandler : Singleton<InputHandler>
                     _currentGroup.StartPath();
                     _currentMode = InputMode.GroupControls;
                     break;
+                }
+                else
+                {
+                    Icon i = hit.collider.GetComponent<Icon>();
+                    if(i != null)
+                    {
+                        i.Tap();
+                    }
                 }
             }
         }

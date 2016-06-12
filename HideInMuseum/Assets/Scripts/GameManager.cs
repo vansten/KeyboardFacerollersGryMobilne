@@ -22,9 +22,10 @@ public enum SatisfactionStage
 }
 
 [Serializable]
-public class RoomIcon
+public class RoomInfo
 {
     public RoomType Type;
+    public Room Room;
     public Sprite Icon;
 }
 
@@ -122,7 +123,7 @@ public class GameManager : Singleton<GameManager>
     #region Public variables
 
     public Grid MainGrid;
-    public List<RoomIcon> Rooms;
+    public List<RoomInfo> Rooms;
     public int MaxGroupCount;
 
     [Range(0.1f, 10.0f)]
@@ -331,11 +332,24 @@ public class GameManager : Singleton<GameManager>
 
     public Sprite GetSpriteByRoomType(RoomType rt)
     {
-        foreach(RoomIcon ri in Rooms)
+        foreach(RoomInfo ri in Rooms)
         {
             if(ri.Type == rt)
             {
                 return ri.Icon;
+            }
+        }
+
+        return null;
+    }
+
+    public Room GetRoomByRoomType(RoomType rt)
+    {
+        foreach(RoomInfo ri in Rooms)
+        {
+            if(ri.Type == rt)
+            {
+                return ri.Room;
             }
         }
 
