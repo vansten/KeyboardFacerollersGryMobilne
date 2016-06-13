@@ -246,5 +246,6 @@ public class VisitStageController : ObjectBase
         _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
         GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position, Quaternion.Euler(0, 0, 90));
         _groupsSpawned.Add(gm);
+        ExclamationMark.Instance.AddGroupWaiting(gm);
     }
 }

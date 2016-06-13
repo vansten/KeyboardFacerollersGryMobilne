@@ -8,11 +8,17 @@ public class Icon : MonoBehaviour
     private SpriteRenderer _spriteRenderer;
     private Color c = Color.white;
     private float _lastTapTime = 0.0f;
+    private float _showTime;
     private int _tapCount;
     
     void Start()
     {
         _spriteRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    void OnEnable()
+    {
+        _showTime = Time.time;
     }
 
     void Update()
@@ -22,19 +28,18 @@ public class Icon : MonoBehaviour
             _tapCount = 0;
         }
 
-        if(_tapCount > 8)
+        if(_tapCount >= 5)
         {
             QTEController.Instance.RemoveQTE(MyRoom);
         }
 
-        float sin = Mathf.Sin(Time.time);
+        float sin = Mathf.Sin((Time.time - _showTime) * 5.0f);
         c.a = Mathf.Lerp(0.0f, 1.0f, sin * sin);
         _spriteRenderer.color = c;
     }
 
     public void Tap()
     {
-        Debug.Log(gameObject.name);
         _lastTapTime = Time.time;
         _tapCount += 1;
     }

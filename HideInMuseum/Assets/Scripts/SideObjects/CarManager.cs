@@ -9,7 +9,7 @@ public class CarManager : MonoBehaviour
     [SerializeField]
     private List<Transform> _spawnPoints;
 
-    private List<GameObject> _carsToUpdate = new List<GameObject>();
+    private List<GameObject> _cars = new List<GameObject>();
     private float _timer = 0.0f;
     private float _cooldown = 30.0f;
 
@@ -21,12 +21,12 @@ public class CarManager : MonoBehaviour
 
     void OnDisable()
     {
-        foreach(GameObject car in _carsToUpdate)
+        foreach(GameObject car in _cars)
         {
             Destroy(car.gameObject);
         }
 
-        _carsToUpdate.Clear();
+        _cars.Clear();
     }
 
     void Update()
@@ -36,24 +36,6 @@ public class CarManager : MonoBehaviour
         {
             SpawnCar();
         }
-
-        List<GameObject> toRemove = new List<GameObject>();
-        foreach (GameObject car in _carsToUpdate)
-        {
-            car.transform.position -= car.transform.right * 5.0f * Time.deltaTime;
-            if ((Mathf.Abs(car.transform.position.x) > 60.0f) || (Mathf.Abs(car.transform.position.y) > 60.0f))
-            {
-                toRemove.Add(car);
-            }
-        }
-
-        foreach(GameObject car in toRemove)
-        {
-            _carsToUpdate.Remove(car);
-            Destroy(car.gameObject);
-        }
-
-        toRemove.Clear();
     }
     
     [ContextMenu("Spawn car")]
@@ -65,6 +47,6 @@ public class CarManager : MonoBehaviour
         GameObject carPrefab = _carPrefabs[Random.Range(0, _carPrefabs.Count)];
         GameObject go = (GameObject)Instantiate(carPrefab, spawnPoint.position, spawnPoint.rotation);
         go.SetActive(true);
-        _carsToUpdate.Add(go);
+        _cars.Add(go);
     }
 }
