@@ -29,11 +29,14 @@ public class VisitStageController : ObjectBase
     [SerializeField]
     private Text _timerText;
     [SerializeField]
+    private AudioClip _dingDongClip;
+    [SerializeField]
     private Vector2 _spawnCooldownRange;
 
     private List<GroupMovement> _groupsSpawned = new List<GroupMovement>();
     protected InputMode _previousInputMode = InputMode.CameraControls;
     protected GroupMovement _previousGroupMovement = null;
+    private AudioSource _source;
     private float _timer;
     private float _spawnCooldown;
     private bool _coroutineStarted = false;
@@ -65,6 +68,17 @@ public class VisitStageController : ObjectBase
     {
         if (GameManager.Instance.PreviousState != GameState.Paused)
         {
+            if(_source == null)
+            {
+                _source = gameObject.AddComponent<AudioSource>();
+            }
+            _source.playOnAwake = false;
+            _source.loop = false;
+            _source.volume = 1.0f;
+            _source.spatialBlend = 0.0f;
+            _source.spatialize = false;
+            _source.clip = _dingDongClip;
+
             gameObject.SetActive(true);
 
             MonoBehaviour[] mbs = GetComponentsInChildren<MonoBehaviour>();
@@ -244,8 +258,9 @@ public class VisitStageController : ObjectBase
 
         _timer = 0.0f;
         _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
-        GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position, Quaternion.Euler(0, 0, 90));
+        GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position + Vector3.left * 2.0f, Quaternion.Euler(0, 0, 90));
         _groupsSpawned.Add(gm);
         ExclamationMark.Instance.AddGroupWaiting(gm);
+        _source.Play();
     }
 }

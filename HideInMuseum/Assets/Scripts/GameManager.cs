@@ -288,12 +288,18 @@ public class GameManager : Singleton<GameManager>
         CurrentState = GameState.Menu;
         _counterText.gameObject.SetActive(false);
         TotalMoney = PlayerPrefs.GetFloat("TotalMoneyEarned", 0.0f);
-        Debug.Log(TotalMoney);
+        Screen.autorotateToLandscapeLeft = true;
+        Screen.autorotateToLandscapeRight = true;
+        Screen.autorotateToPortrait = false;
+        Screen.autorotateToPortraitUpsideDown = false;
+        Screen.orientation = ScreenOrientation.AutoRotation;
     }
 
     void Update()
     {
-        if(_currentState == GameState.DecoratorStage || _currentState == GameState.VisitStage)
+        Screen.orientation = ScreenOrientation.AutoRotation;
+
+        if (_currentState == GameState.DecoratorStage || _currentState == GameState.VisitStage)
         {
             TimeLeft -= Time.deltaTime;
         }

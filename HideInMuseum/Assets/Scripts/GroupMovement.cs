@@ -80,12 +80,17 @@ public class GroupMovement : MonoBehaviour
 
     protected SpriteRenderer _myRenderer;
 
+    [SerializeField]
+    private AudioSource _booSource;
+    [SerializeField]
+    private AudioSource _yaySource;
+
     void OnEnable()
     {
         SpriteRenderer _myRenderer = GetComponent<SpriteRenderer>();
         if(_myRenderer != null && _sprites != null && _sprites.Count > 0)
         {
-            _myRenderer.sprite = _sprites[Random.Range(0, _sprites.Count)];
+            _myRenderer.sprite = _sprites[Random.Range(0, 7)];
         }
 
         _lineRenderer = GetComponent<LineRenderer>();
@@ -136,6 +141,8 @@ public class GroupMovement : MonoBehaviour
             }
         }
 
+        _booSource.Stop();
+        _yaySource.Stop();
         _minusParticle.Stop();
         _plusParticle.Stop();
         ClearPath();
@@ -166,7 +173,7 @@ public class GroupMovement : MonoBehaviour
                 sprite = go.AddComponent<SpriteRenderer>();
                 sprite.sortingLayerID = _myRenderer.sortingLayerID;
             }
-            sprite.sprite = _sprites[Random.Range(0, 7)];
+            sprite.sprite = _sprites[Random.Range(0, _sprites.Count)];
         }
     }
 
@@ -181,50 +188,96 @@ public class GroupMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(!_visitingApproperiateRoom) _maxTimeToVisitTimer += Time.deltaTime;
+        if(RoomsToVisit.Count > 0 && _currentRoomType != RoomsToVisit[0]) _maxTimeToVisitTimer += Time.deltaTime;
         if (_maxTimeToVisitTimer > _maxTimeToVisitRoom)
         {
-            if (_minusParticle.isStopped) _minusParticle.Play();
+            if (_minusParticle.isStopped)
+            {
+                _booSource.Play();
+                _minusParticle.Play();
+            }
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
         }
 
         Room currentRoom = GameManager.Instance.GetRoomByRoomType(_currentRoomType);
-        if(currentRoom != null && currentRoom.IsQTEActive)
+        bool isInDanger = currentRoom != null && currentRoom.IsQTEActive;
+
+        if (isInDanger)
         {
-            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, transform.position);
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, transform.position);
+            if(!_minusParticle.isPlaying)
+            {
+                _booSource.Play();
+                _minusParticle.Play();
+            }
+            
+            if(_plusParticle.isPlaying)
+            {
+                _yaySource.Stop();
+                _plusParticle.Stop();
+            }
+            _standingTimer = 0.0f;
         }
 
         if(!_isMoving)
         {
-            _standingTimer += Time.deltaTime;
-            if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
+            if (!isInDanger)
             {
-                if (_minusParticle.isPlaying)
-                    _minusParticle.Stop();
-                if (_plusParticle.isStopped)
-                    _plusParticle.Play();
-                GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
-                if (_standingTimer > _visitRequiredTime)
+                _standingTimer += Time.deltaTime;
+                if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
                 {
-                    RoomCompleted();
-                    _minusParticle.Stop();
-                    _plusParticle.Stop();
+                    if (_minusParticle.isPlaying)
+                    {
+                        _booSource.Stop();
+                        _minusParticle.Stop();
+                    }
+                    if (_plusParticle.isStopped)
+                    {
+                        _yaySource.Play();
+                        _plusParticle.Play();
+                    }
+                    GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    if (_standingTimer > _visitRequiredTime)
+                    {
+                        RoomCompleted();
+                        _booSource.Stop();
+                        _yaySource.Stop();
+                        _minusParticle.Stop();
+                        _plusParticle.Stop();
+                    }
+                }
+                else
+                {
+                    if (_standingTimer > 5.0f)
+                    {
+                        if (_plusParticle.isPlaying)
+                        {
+                            _yaySource.Stop();
+                            _plusParticle.Stop();
+                        }
+                        if (_minusParticle.isStopped)
+                        {
+                            _booSource.Play();
+                            _minusParticle.Play();
+                        }
+                        GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    }
                 }
             }
-            else
-            {
-                if (_standingTimer > 5.0f)
-                {
-                    if(_plusParticle.isPlaying) _plusParticle.Stop();
-                    if (_minusParticle.isStopped) _minusParticle.Play();
-                    GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
-                }
-            }
+
             return;                
         }
 
-        if (_minusParticle.isPlaying) _minusParticle.Stop();
-        if (_plusParticle.isPlaying) _plusParticle.Stop();
+        if (!isInDanger && _minusParticle.isPlaying)
+        {
+            _booSource.Stop();
+            _minusParticle.Stop();
+        }
+        if (isInDanger && _plusParticle.isPlaying)
+        {
+            _yaySource.Stop();
+            _plusParticle.Stop();
+        }
         _movingTimer += Time.deltaTime * _speed * _invertedDistance;
         Vector3 newPosition = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
         _movementDelta = newPosition - transform.position;
