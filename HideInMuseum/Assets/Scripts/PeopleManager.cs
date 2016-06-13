@@ -2,10 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class PeopleManager : MonoBehaviour
+public class PeopleManager : Singleton<PeopleManager>
 {
     [SerializeField]
-    private List<GameObject> _passerbyPrefabs;
+    public List<GameObject> _passerbyPrefabs;
     [SerializeField]
     private List<Transform> _spawnPoints;
 
@@ -64,5 +64,16 @@ public class PeopleManager : MonoBehaviour
     {
         Vector3 pos = go.transform.position;
         return Mathf.Abs(pos.x) > 60.0f || Mathf.Abs(pos.y) > 60.0f;
+    }
+
+    public void AddPasserby(GameObject go)
+    {
+        _spawnedPasserbies.Add(go);
+    }
+
+    public GameObject GetRandomPerson()
+    {
+        int prefabI = Random.Range(0, _passerbyPrefabs.Count);
+        return _passerbyPrefabs[prefabI];
     }
 }
