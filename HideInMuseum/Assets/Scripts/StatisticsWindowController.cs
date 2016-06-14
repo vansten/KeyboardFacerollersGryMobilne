@@ -47,6 +47,7 @@ public class StatisticsWindowController : ObjectBase
         _moneyEarnedText.text = "$" + moneyEarned.ToString("0.00");
 
         gameObject.SetActive(true);
+        GyroscopeStageController.Instance.Reset();
     }
 
     public override void OnVisitStageBegin()

@@ -224,7 +224,7 @@ public class GameManager : Singleton<GameManager>
         {
             return _satisfactionLevel;
         }
-        set
+        private set
         {
             _satisfactionLevel = value;
             if(_satisfactionLevel <= -SatisfactionAmplitude)
@@ -279,9 +279,29 @@ public class GameManager : Singleton<GameManager>
         set;
     }
 
+    private bool _soundOn;
+    public bool SoundOn
+    {
+        get
+        {
+            return _soundOn;
+        }
+        set
+        {
+            _soundOn = value;
+            AudioListener.volume = _soundOn ? 1.0f : 0.0f;
+        }
+    }
+
     #endregion
 
     #region Unity methods
+
+    protected override void Awake()
+    {
+        base.Awake();
+        SoundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
+    }
 
     void Start()
     {
@@ -313,6 +333,7 @@ public class GameManager : Singleton<GameManager>
     void OnApplicationQuit()
     {
         PlayerPrefs.SetFloat("TotalMoneyEarned", TotalMoney);
+        PlayerPrefs.SetInt("SoundOn", SoundOn ? 1 : 0);
         PlayerPrefs.Save();
     }
 
@@ -384,7 +405,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void DecreaseSatisfaction(SatisfactionStage stage, Vector3 position)
+    public void DecreaseSatisfaction(SatisfactionStage stage, GroupMovement group)
     {
         float value = Time.deltaTime;
         switch (stage)
@@ -400,9 +421,11 @@ public class GameManager : Singleton<GameManager>
                 break;
         }
         SatisfactionLevel -= value;
+        group.TogglePlusParticles(false);
+        group.ToggleMinusParticles(true);
     }
 
-    public void IncreaseSatisfaction(SatisfactionStage stage, Vector3 position)
+    public void IncreaseSatisfaction(SatisfactionStage stage, GroupMovement group)
     {
         float value = Time.deltaTime;
         switch (stage)
@@ -418,6 +441,23 @@ public class GameManager : Singleton<GameManager>
                 break;
         }
         SatisfactionLevel += value;
+        group.ToggleMinusParticles(false);
+        group.TogglePlusParticles(true);
+    }
+
+    public void ExhibitCracked(GroupMovement group)
+    {
+        float value = (SatisfactionLevel + SatisfactionAmplitude) * 0.5f;
+        SatisfactionLevel -= value;
+        group.TogglePlusParticles(false);
+        group.ToggleMinusParticles(true);
+        StartCoroutine(StopMinusParticlesCoroutine(group));
+    }
+
+    IEnumerator StopMinusParticlesCoroutine(GroupMovement group)
+    {
+        yield return new WaitForSeconds(1.0f);
+        group.ToggleMinusParticles(false);
     }
 
     public void Unpause()
@@ -432,7 +472,6 @@ public class GameManager : Singleton<GameManager>
 
     IEnumerator UnpauseCoroutine()
     {
-
         OnUnpaused();
 
         if (_previousState == GameState.DecoratorStage || _previousState == GameState.VisitStage)

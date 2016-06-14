@@ -188,15 +188,15 @@ public class GroupMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        if(RoomsToVisit.Count > 0 && _currentRoomType != RoomsToVisit[0]) _maxTimeToVisitTimer += Time.deltaTime;
+        _maxTimeToVisitTimer += Time.deltaTime;
         if (_maxTimeToVisitTimer > _maxTimeToVisitRoom)
         {
-            if (_minusParticle.isStopped)
+            /*if (_minusParticle.isStopped)
             {
                 _booSource.Play();
                 _minusParticle.Play();
-            }
-            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+            }*/
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
         }
 
         Room currentRoom = GameManager.Instance.GetRoomByRoomType(_currentRoomType);
@@ -204,8 +204,8 @@ public class GroupMovement : MonoBehaviour
 
         if (isInDanger)
         {
-            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, transform.position);
-            if(!_minusParticle.isPlaying)
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, this);
+            /*if(!_minusParticle.isPlaying)
             {
                 _booSource.Play();
                 _minusParticle.Play();
@@ -215,7 +215,7 @@ public class GroupMovement : MonoBehaviour
             {
                 _yaySource.Stop();
                 _plusParticle.Stop();
-            }
+            }*/
             _standingTimer = 0.0f;
         }
 
@@ -226,7 +226,7 @@ public class GroupMovement : MonoBehaviour
                 _standingTimer += Time.deltaTime;
                 if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
                 {
-                    if (_minusParticle.isPlaying)
+                    /*if (_minusParticle.isPlaying)
                     {
                         _booSource.Stop();
                         _minusParticle.Stop();
@@ -235,8 +235,8 @@ public class GroupMovement : MonoBehaviour
                     {
                         _yaySource.Play();
                         _plusParticle.Play();
-                    }
-                    GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                    }*/
+                    GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, this);
                     if (_standingTimer > _visitRequiredTime)
                     {
                         RoomCompleted();
@@ -250,7 +250,7 @@ public class GroupMovement : MonoBehaviour
                 {
                     if (_standingTimer > 5.0f)
                     {
-                        if (_plusParticle.isPlaying)
+                        /*if (_plusParticle.isPlaying)
                         {
                             _yaySource.Stop();
                             _plusParticle.Stop();
@@ -259,25 +259,23 @@ public class GroupMovement : MonoBehaviour
                         {
                             _booSource.Play();
                             _minusParticle.Play();
-                        }
-                        GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, transform.position);
+                        }*/
+                        GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
                     }
                 }
             }
 
             return;                
         }
-
-        if (!isInDanger && _minusParticle.isPlaying)
+        else
         {
-            _booSource.Stop();
-            _minusParticle.Stop();
-        }
-        if (isInDanger && _plusParticle.isPlaying)
-        {
-            _yaySource.Stop();
+            if(!isInDanger)
+            {
+                _minusParticle.Stop();
+            }
             _plusParticle.Stop();
         }
+
         _movingTimer += Time.deltaTime * _speed * _invertedDistance;
         Vector3 newPosition = Vector3.Lerp(_prevPosition, _path[_currentPathIndex], _movingTimer);
         _movementDelta = newPosition - transform.position;
@@ -342,6 +340,9 @@ public class GroupMovement : MonoBehaviour
 
     public void ContinuePath(Vector3 position)
     {
+        _minusParticle.Stop();
+        _booSource.Stop();
+        _standingTimer = 0.0f;
         position.z = 0.0f;
         if(_path.Count > 0)
         {
@@ -415,11 +416,51 @@ public class GroupMovement : MonoBehaviour
         _lineRenderer.SetVertexCount(0);
     }
 
+    public void ToggleMinusParticles(bool value)
+    {
+        if(value)
+        {
+            if(!_minusParticle.isPlaying)
+            {
+                _minusParticle.Play();
+                _booSource.Play();
+            }
+        }
+        else
+        {
+            if(_minusParticle.isPlaying)
+            {
+                _minusParticle.Stop();
+                _booSource.Stop();
+            }
+        }
+    }
+
+    public void TogglePlusParticles(bool value)
+    {
+        if (value)
+        {
+            if (!_plusParticle.isPlaying)
+            {
+                _plusParticle.Play();
+                _yaySource.Play();
+            }
+        }
+        else
+        {
+            if (_plusParticle.isPlaying)
+            {
+                _plusParticle.Stop();
+                _yaySource.Stop();
+            }
+        }
+    }
+
     void OnCollisionEnter2D(Collision2D col)
     {
         if(col.gameObject.GetComponent<GroupMovement>() != null)
         {
-            GameManager.Instance.SatisfactionLevel -= 0.75f;
+            GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, this);
         }
         ClearPath();
 
@@ -434,6 +475,43 @@ public class GroupMovement : MonoBehaviour
         if (col.gameObject.layer == LayerMask.NameToLayer("Room"))
         {
             _currentRoomType = col.GetComponent<Room>().Type;
+            _maxTimeToVisitTimer = 0.0f;
         }
+        else if(col.isTrigger && col.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+        {
+            Transform parent = col.transform.parent;
+            if(parent == null || parent.name.Contains("Walls"))
+            {
+                return;
+            }
+
+            SpriteRenderer spriteRenderer = col.gameObject.GetComponent<SpriteRenderer>();
+            if(spriteRenderer != null)
+            {
+                GyroscopeStageController.Instance.Show(spriteRenderer.sprite, col.gameObject, this);
+                StartCoroutine(WaitToEnableExhibitColliderAgain(col));
+            }
+        }
+        else if(col.gameObject.layer == LayerMask.NameToLayer("GroupMember"))
+        {
+            foreach(GroupMember gm in _groupMembers)
+            {
+                if(col.gameObject == gm.gameObject)
+                {
+                    //My member, do nothing
+                    return;
+                }
+            }
+
+            //Not mymember, stop!
+            ClearPath();
+        }
+    }
+
+    IEnumerator WaitToEnableExhibitColliderAgain(Collider2D col)
+    {
+        col.enabled = false;
+        yield return new WaitForSeconds(10.0f);
+        col.enabled = true;
     }
 }

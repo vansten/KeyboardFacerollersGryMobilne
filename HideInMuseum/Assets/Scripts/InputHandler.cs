@@ -59,6 +59,14 @@ public class InputHandler : Singleton<InputHandler>
         _mainCamera.orthographicSize = (_zoomRange.y + _zoomRange.x) * 0.5f;
     }
 
+    void OnDisable()
+    {
+        if (_currentGroup != null)
+        {
+            _currentGroup.ClearPath();
+        }
+    }
+
     void Update()
     {
         if(GameManager.Instance.CurrentState != GameState.DecoratorStage && GameManager.Instance.CurrentState != GameState.VisitStage)

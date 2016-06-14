@@ -19,8 +19,6 @@ public class MenuController : ObjectBase
     [SerializeField]
     private Color _soundOffColor;
 
-    private bool _soundOn;
-
     #endregion
 
     #region Object Base methods
@@ -60,9 +58,8 @@ public class MenuController : ObjectBase
     {
         base.OnEnable();
 
-        _soundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
-        _soundText.color = _soundOn ? _soundOnColor : _soundOffColor;
-        _soundText.text = _soundOn ? "ON" : "OFF";
+        _soundText.color = GameManager.Instance.SoundOn ? _soundOnColor : _soundOffColor;
+        _soundText.text = GameManager.Instance.SoundOn ? "ON" : "OFF";
         _mainMenuParent.SetActive(true);
         _highscoresMenuParent.SetActive(false);
         _exitMenuParent.SetActive(false);
@@ -98,10 +95,9 @@ public class MenuController : ObjectBase
 
     public void SoundOnOffClick()
     {
-        _soundOn = !_soundOn;
-        _soundText.color = _soundOn ? _soundOnColor : _soundOffColor;
-        _soundText.text = _soundOn ? "ON" : "OFF";
-        PlayerPrefs.SetInt("SoundOn", _soundOn ? 1 : 0);
+        GameManager.Instance.SoundOn = !GameManager.Instance.SoundOn;
+        _soundText.color = GameManager.Instance.SoundOn ? _soundOnColor : _soundOffColor;
+        _soundText.text = GameManager.Instance.SoundOn ? "ON" : "OFF";
     }
 
     public void ExitYesClick()

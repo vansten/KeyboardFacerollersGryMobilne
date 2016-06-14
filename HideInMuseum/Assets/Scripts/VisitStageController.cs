@@ -44,6 +44,13 @@ public class VisitStageController : ObjectBase
 
     public override void OnMenuBegin()
     {
+        foreach (GroupMovement gm in _groupsSpawned)
+        {
+            Destroy(gm.gameObject);
+        }
+
+        _groupsSpawned.Clear();
+
         gameObject.SetActive(false);
         _UIGameObject.SetActive(false);
     }
@@ -61,6 +68,8 @@ public class VisitStageController : ObjectBase
         }
 
         _groupsSpawned.Clear();
+
+        gameObject.SetActive(false);
         _UIGameObject.SetActive(false);
     }
 
@@ -180,15 +189,6 @@ public class VisitStageController : ObjectBase
 
         _timerText.text = Helpers.ConvertSecondsToTimeText(GameManager.Instance.TimeLeft);
 
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            GameManager.Instance.SatisfactionLevel += 5.0f;
-        }
-        if(Input.GetKeyDown(KeyCode.D))
-        {
-            GameManager.Instance.SatisfactionLevel = -4.5f;
-        }
-
         if(InputHandler.Instance.CurrentMode == InputMode.GroupControls)
         {
             if(_previousGroupMovement != InputHandler.Instance.CurrentGroup && InputHandler.Instance.CurrentGroup != null)
@@ -258,7 +258,7 @@ public class VisitStageController : ObjectBase
 
         _timer = 0.0f;
         _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
-        GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position + Vector3.left * 2.0f, Quaternion.Euler(0, 0, 90));
+        GroupMovement gm = (GroupMovement)Instantiate(_leaderPrefab, _entrance.transform.position + Vector3.left * 3.0f, Quaternion.Euler(0, 0, 90));
         _groupsSpawned.Add(gm);
         ExclamationMark.Instance.AddGroupWaiting(gm);
         _source.Play();
