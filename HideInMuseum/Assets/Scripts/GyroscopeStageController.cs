@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class GyroscopeStageController : Singleton<GyroscopeStageController>
 {
@@ -10,12 +11,16 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
     private Transform _rotationPoint;
     [SerializeField]
     private GameObject _crackedPrefab;
+    [SerializeField]
+    private Text _timerText;
 
     private List<GameObject> _crackedExhibits = new List<GameObject>();
     private List<GameObject> _crackedSpawned = new List<GameObject>();
     private GameObject _exhibitObject;
     private GroupMovement _group;
-    float _timer = 0.0f;
+    private float _timer = 0.0f;
+    private float _cameraSize;
+    private bool _countdown = true;
 
     void Start()
     {
@@ -25,6 +30,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
     public void Show(Sprite exhibit, GameObject go, GroupMovement group)
     {
         _exhibitSpriteRenderer.sprite = exhibit;
+        _rotationPoint.gameObject.SetActive(false);
         _exhibitObject = go;
         Time.timeScale = 0.0f;
         gameObject.SetActive(true);
@@ -32,6 +38,11 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
         _rotationPoint.rotation = Quaternion.identity;
         _rotationPoint.Rotate(0.0f, 0.0f, Random.Range(-1.0f, 1.0f));
         _group = group;
+        _timer = 3.0f;
+        _countdown = true;
+        _cameraSize = Camera.main.orthographicSize;
+        Camera.main.orthographicSize = 12.0f;
+        StartCoroutine(CountdownCoroutine());
     }
 
     public void Reset()
@@ -52,8 +63,15 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
 
     void Update()
     {
+
         transform.position = Camera.main.transform.position;
         transform.position -= new Vector3(0.0f, 0.0f, transform.position.z);
+
+        if (_countdown)
+        {
+            return;
+        }
+
         Vector3 accelerometerInput = Input.acceleration;
         Vector3 rotation = Vector3.zero;
         accelerometerInput.x += 0.1f;
@@ -66,19 +84,6 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
             rotation.z = -1.0f;
         }
         _rotationPoint.Rotate(rotation * 60.0f * Time.unscaledDeltaTime);
-/*#if UNITY_EDITOR
-        float z = 0.0f;
-        if(Input.GetKey(KeyCode.A))
-        {
-            z += 1.0f;
-        }
-        if(Input.GetKey(KeyCode.D))
-        {
-            z -= 1.0f;
-        }
-        Vector3 tmpGyro = new Vector3(0.0f, 0.0f, z);
-        _rotationPoint.Rotate(tmpGyro);
-#endif*/
 
         float sign = 0.0f;
         float eulerZ = _rotationPoint.rotation.eulerAngles.z;
@@ -105,6 +110,8 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
 
         _rotationPoint.Rotate(0.0f, 0.0f, Time.unscaledDeltaTime * 30.0f * sign);
 
+        _timerText.text = (5.0f - _timer).ToString("0");
+
         eulerZ = _rotationPoint.rotation.eulerAngles.z;
         if(eulerZ > 75.0f && eulerZ < 285.0f)
         {
@@ -116,6 +123,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
             Time.timeScale = 1.0f;
             InputHandler.Instance.enabled = true;
             GameManager.Instance.ExhibitCracked(_group);
+            Camera.main.orthographicSize = _cameraSize;
             gameObject.SetActive(false);
         }
 
@@ -125,7 +133,31 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
             _timer = 0.0f;
             Time.timeScale = 1.0f;
             InputHandler.Instance.enabled = true;
+            Camera.main.orthographicSize = _cameraSize;
             gameObject.SetActive(false);
         }
+    }
+
+    IEnumerator CountdownCoroutine()
+    {
+        int i = 0;
+        while(i < 3)
+        {
+            float timer = 0.0f;
+            while(timer <= 1.0f)
+            {
+                timer += Time.unscaledDeltaTime;
+                _timerText.fontSize = (int)(180.0f * timer);
+                yield return null;
+            }
+
+            i += 1;
+            _timerText.text = (3 - i).ToString();
+            yield return null;
+        }
+
+        _countdown = false;
+        _timer = 0.0f;
+        _rotationPoint.gameObject.SetActive(true);
     }
 }

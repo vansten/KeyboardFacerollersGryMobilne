@@ -136,7 +136,6 @@ public class VisitStageController : ObjectBase
             else
             {
                 _roomsToVisitLogos[i].SetActive(true);
-                //_roomsToVisitLogos[i].GetComponentInChildren<Text>().text = GetRoomShortName(group.RoomsToVisit[rooms - j]);               
                 Image currentImage = _roomsToVisitLogos[i].GetComponent<Image>();
                 currentImage.sprite = GameManager.Instance.GetSpriteByRoomType(group.RoomsToVisit[rooms - j]);
                 currentImage.color = group.MyColor;
@@ -215,6 +214,11 @@ public class VisitStageController : ObjectBase
             {
                 SpawnNewGroup();
             }
+
+            if(_groupsSpawned.Count == 0)
+            {
+                SpawnNewGroup();
+            }
         }
         else
         {
@@ -235,6 +239,7 @@ public class VisitStageController : ObjectBase
                     }
                 }
             }
+
             if(_groupsSpawned.Count <= 0 && !_coroutineStarted)
             {
                 _coroutineStarted = true;
@@ -251,7 +256,7 @@ public class VisitStageController : ObjectBase
 
     void SpawnNewGroup()
     {
-        if(_groupsSpawned.Count >= GameManager.Instance.MaxGroupCount)
+        if(_groupsSpawned.Count >= GameManager.Instance.MaxGroupCount || ExclamationMark.Instance.IsGroupWaiting())
         {
             return;
         }

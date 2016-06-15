@@ -9,9 +9,13 @@ public class MenuController : ObjectBase
     [SerializeField]
     private GameObject _mainMenuParent;
     [SerializeField]
-    private GameObject _highscoresMenuParent;
+    private GameObject _shopMenuParent;
     [SerializeField]
     private GameObject _exitMenuParent;
+    [SerializeField]
+    private GameObject _aboutMenuParent;
+    [SerializeField]
+    private GameObject _howToPlayMenuParent;
     [SerializeField]
     private Text _soundText;
     [SerializeField]
@@ -25,6 +29,7 @@ public class MenuController : ObjectBase
 
     public override void OnMenuBegin()
     {
+        ExclamationMark.Instance.Reset();
         gameObject.SetActive(true);
     }
 
@@ -61,7 +66,7 @@ public class MenuController : ObjectBase
         _soundText.color = GameManager.Instance.SoundOn ? _soundOnColor : _soundOffColor;
         _soundText.text = GameManager.Instance.SoundOn ? "ON" : "OFF";
         _mainMenuParent.SetActive(true);
-        _highscoresMenuParent.SetActive(false);
+        _shopMenuParent.SetActive(false);
         _exitMenuParent.SetActive(false);
     }
 
@@ -80,17 +85,31 @@ public class MenuController : ObjectBase
         _exitMenuParent.SetActive(true);
     }
 
-    public void HighscoresClick()
+    public void ShopClick()
     {
         _mainMenuParent.SetActive(false);
-        _highscoresMenuParent.SetActive(true);
+        _shopMenuParent.SetActive(true);
+    }
+
+    public void AboutClick()
+    {
+        _mainMenuParent.SetActive(false);
+        _aboutMenuParent.SetActive(true);
+    }
+
+    public void HowToPlayClick()
+    {
+        _mainMenuParent.SetActive(false);
+        _howToPlayMenuParent.SetActive(true);
     }
 
     public void BackToMenuClick()
     {
         _mainMenuParent.SetActive(true);
         _exitMenuParent.SetActive(false);
-        _highscoresMenuParent.SetActive(false);
+        _shopMenuParent.SetActive(false);
+        _howToPlayMenuParent.SetActive(false);
+        _aboutMenuParent.SetActive(false);
     }
 
     public void SoundOnOffClick()

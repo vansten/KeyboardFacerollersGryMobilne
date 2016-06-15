@@ -29,17 +29,24 @@ public class Room : MonoBehaviour
     {
         _timer = 0.0f;
         _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
+        Darkness.SetActive(false);
+        DarknessIcon.SetActive(false);
+        Water.SetActive(false);
+        WaterIcon.SetActive(false);
         IsQTEActive = false;
     }
 
     void Update()
     {
-        _timer += Time.deltaTime;
-        if(_timer > _cooldown)
+        if (IsQTEActive)
         {
-            QTEController.Instance.SpawnQTE(this);
-            _timer = 0.0f;
-            _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
+            _timer += Time.deltaTime;
+            if (_timer > _cooldown)
+            {
+                QTEController.Instance.SpawnQTE(this);
+                _timer = 0.0f;
+                _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
+            }
         }
     }
 }

@@ -36,7 +36,7 @@ public class StatisticsWindowController : ObjectBase
     public override void OnStatisticsWindowBegin()
     {
         bool win = GameManager.Instance.SatisfactionLevel > -5.0f && GameManager.Instance.GroupsHandled > 0;
-        _failedSucceededText.text = win ? "SUCCEEDED" : "FAILED";
+        _failedSucceededText.text = win ? "END OF THE DAY" : "VISITORS WERE VERY UNHAPPY";
         _failedSucceededText.color = win ? Helpers.FromHex("a1ff64") : Helpers.FromHex("ff6666"); //green : red
 
         _groupsHandledText.text = GameManager.Instance.GroupsHandled.ToString();

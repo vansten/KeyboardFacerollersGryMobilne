@@ -200,20 +200,27 @@ public class InputHandler : Singleton<InputHandler>
         {
             if (hit.collider != null && hit.collider.gameObject.activeInHierarchy)
             {
-                //Check if it's character
-                _currentGroup = hit.collider.GetComponent<GroupMovement>();
-                if (_currentGroup != null)
+
+                Icon i = hit.collider.GetComponent<Icon>();
+                if(i != null)
                 {
-                    _currentGroup.StartPath();
-                    _currentMode = InputMode.GroupControls;
+                    _currentGroup = null;
+                    _currentMode = InputMode.CameraControls;
+                    i.Tap();
                     break;
                 }
                 else
                 {
-                    Icon i = hit.collider.GetComponent<Icon>();
-                    if(i != null)
+                    _currentGroup = hit.collider.GetComponent<GroupMovement>();
+                    if(_currentGroup == null)
                     {
-                        i.Tap();
+                        _currentGroup = hit.collider.transform.parent.GetComponent<GroupMovement>();
+                    }
+                    
+                    if(_currentGroup != null)
+                    {
+                        _currentGroup.StartPath();
+                        _currentMode = InputMode.GroupControls;
                     }
                 }
             }

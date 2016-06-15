@@ -1,0 +1,679 @@
+fileFormatVersion: 2
+guid: fed8f394e0a86e34fa081c9fd1c2bc55
+timeCreated: 1465928054
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: kamera4_bujanie
+    21300002: kamera1_bujanie
+    21300004: kamera3_bujanie
+    21300006: kamera2_bujanie
+    21300008: plakat4_bujanie
+    21300010: kostium3_bujanie
+    21300012: kostium4_bujanie
+    21300014: bolek_bujanie
+    21300016: plakat_bujanie
+    21300018: plakat5_bujanie
+    21300020: lolek_bujanie
+    21300022: kostium2_bujanie
+    21300024: bartolini_bujanie
+    21300026: kostium1_bujanie
+    21300028: plakat2_bujanie
+    21300030: smok_bujanie
+    21300032: plakat3_bujanie
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 128
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: kamera4_bujanie
+      rect:
+        serializedVersion: 2
+        x: 45
+        y: 1535
+        width: 289
+        height: 464
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 144.5, y: 181}
+        - {x: 144.5, y: 464}
+        - {x: -52.5, y: 464}
+        - {x: -52.5, y: 419}
+        - {x: -102.5, y: 419}
+        - {x: -104.5, y: 417}
+        - {x: -104.5, y: 387}
+        - {x: -144.5, y: 387}
+        - {x: -144.5, y: 302}
+        - {x: -126.5, y: 302}
+        - {x: -126.5, y: 268}
+        - {x: -124.5, y: 266}
+        - {x: -52.5, y: 226}
+        - {x: -80.5, y: 226}
+        - {x: -82.5, y: 224}
+        - {x: -82.5, y: 154}
+        - {x: -81.5, y: 151}
+        - {x: -32.5, y: 156}
+        - {x: -5.5, y: 155}
+        - {x: -9.5, y: 130}
+        - {x: -23.5, y: 104}
+        - {x: -25.5, y: 96}
+        - {x: -18.5, y: 82}
+        - {x: -13.5, y: 74}
+        - {x: -7.5, y: 67}
+        - {x: -24.5, y: 54}
+        - {x: -36.5, y: 11}
+        - {x: -43.5, y: 3}
+        - {x: -43.5, y: 0}
+        - {x: 39.5, y: 0}
+        - {x: 40.5, y: 4}
+        - {x: 72.5, y: 146}
+        - {x: 86.5, y: 181}
+    - name: kamera1_bujanie
+      rect:
+        serializedVersion: 2
+        x: 418
+        y: 1651
+        width: 385
+        height: 360
+      alignment: 9
+      pivot: {x: 0.4, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 68, y: 0}
+        - {x: 48, y: 63}
+        - {x: 198, y: 69}
+        - {x: 231, y: 106}
+        - {x: 231, y: 174}
+        - {x: 222, y: 199}
+        - {x: 154, y: 213}
+        - {x: 109, y: 194}
+        - {x: 115, y: 230}
+        - {x: 73, y: 252}
+        - {x: 89, y: 321}
+        - {x: 48, y: 360}
+        - {x: -23, y: 360}
+        - {x: -65, y: 327}
+        - {x: -47, y: 239}
+        - {x: -134, y: 235}
+        - {x: -154, y: 219}
+        - {x: -154, y: 168}
+        - {x: -131, y: 165}
+        - {x: -129, y: 71}
+        - {x: -122, y: 66}
+        - {x: -37, y: 64}
+        - {x: -88, y: 3}
+        - {x: -84, y: 0}
+        - {x: -47, y: 0}
+        - {x: -27, y: 30}
+        - {x: 16, y: 64}
+        - {x: 40, y: 0}
+    - name: kamera3_bujanie
+      rect:
+        serializedVersion: 2
+        x: 814
+        y: 1812
+        width: 289
+        height: 190
+      alignment: 9
+      pivot: {x: 0.8, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 57.80005, y: 190}
+        - {x: -185.19995, y: 190}
+        - {x: -185.19995, y: 168}
+        - {x: -215.19995, y: 181}
+        - {x: -231.19995, y: 184}
+        - {x: -231.19995, y: 92}
+        - {x: -194.19995, y: 94}
+        - {x: -184.19995, y: 70}
+        - {x: -61.19995, y: 70}
+        - {x: -38.19995, y: 0}
+        - {x: 42.80005, y: 0}
+        - {x: 43.80005, y: 5}
+        - {x: 30.800049, y: 71}
+        - {x: 57.80005, y: 71}
+    - name: kamera2_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1144
+        y: 1644
+        width: 385
+        height: 374
+      alignment: 9
+      pivot: {x: 0.3, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 28.5, y: 68}
+        - {x: 140.5, y: 50}
+        - {x: 170.5, y: 66}
+        - {x: 269.5, y: 41}
+        - {x: 269.5, y: 76}
+        - {x: 253.5, y: 256}
+        - {x: 245.5, y: 257}
+        - {x: 148.5, y: 195}
+        - {x: 140.5, y: 244}
+        - {x: 123.5, y: 259}
+        - {x: 61.5, y: 252}
+        - {x: 70.5, y: 263}
+        - {x: 48.5, y: 371}
+        - {x: 41.5, y: 374}
+        - {x: -7.5, y: 374}
+        - {x: -106.5, y: 346}
+        - {x: -114.5, y: 325}
+        - {x: -86.5, y: 229}
+        - {x: -79.5, y: 220}
+        - {x: -68.5, y: 220}
+        - {x: -64.5, y: 221}
+        - {x: -71.5, y: 219}
+        - {x: -81.5, y: 220}
+        - {x: -94.5, y: 206}
+        - {x: -93.5, y: 94}
+        - {x: -86.5, y: 84}
+        - {x: -65.5, y: 79}
+        - {x: -23.5, y: 74}
+        - {x: -23.5, y: 32}
+        - {x: -115.5, y: 32}
+        - {x: -115.5, y: 0}
+        - {x: 114.5, y: 0}
+        - {x: 115.5, y: 6}
+        - {x: 103.5, y: 32}
+        - {x: 26.5, y: 32}
+    - name: plakat4_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1587
+        y: 1449
+        width: 433
+        height: 562
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -216.5, y: 562}
+        - {x: -216.5, y: 0}
+        - {x: 216.5, y: 0}
+        - {x: 216.5, y: 562}
+    - name: kostium3_bujanie
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 776
+        width: 311
+        height: 578
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 155.5, y: 34}
+        - {x: 155.5, y: 58}
+        - {x: 144.5, y: 115}
+        - {x: 132.5, y: 166}
+        - {x: 113.5, y: 256}
+        - {x: 95.5, y: 335}
+        - {x: 80.5, y: 399}
+        - {x: 74.5, y: 424}
+        - {x: 46.5, y: 530}
+        - {x: 38.5, y: 551}
+        - {x: 33.5, y: 564}
+        - {x: 24.5, y: 573}
+        - {x: 12.5, y: 578}
+        - {x: -6.5, y: 578}
+        - {x: -20.5, y: 566}
+        - {x: -45.5, y: 558}
+        - {x: -57.5, y: 565}
+        - {x: -79.5, y: 556}
+        - {x: -85.5, y: 551}
+        - {x: -95.5, y: 540}
+        - {x: -105.5, y: 478}
+        - {x: -126.5, y: 321}
+        - {x: -133.5, y: 270}
+        - {x: -143.5, y: 196}
+        - {x: -153.5, y: 121}
+        - {x: -155.5, y: 105}
+        - {x: -155.5, y: 74}
+        - {x: -147.5, y: 63}
+        - {x: -130.5, y: 63}
+        - {x: -112.5, y: 75}
+        - {x: -77.5, y: 60}
+        - {x: -80.5, y: 30}
+        - {x: -73.5, y: 25}
+        - {x: -64.5, y: 20}
+        - {x: -45.5, y: 18}
+        - {x: -4.5, y: 17}
+        - {x: 10.5, y: 20}
+        - {x: 57.5, y: 15}
+        - {x: 74.5, y: 25}
+        - {x: 86.5, y: 22}
+        - {x: 88.5, y: 6}
+        - {x: 93.5, y: 0}
+        - {x: 116.5, y: 0}
+        - {x: 124.5, y: 4}
+        - {x: 130.5, y: 13}
+        - {x: 145.5, y: 28}
+      - - {x: 138.5, y: 578}
+        - {x: 136.5, y: 576}
+        - {x: 134.5, y: 559}
+        - {x: 134.5, y: 547}
+        - {x: 136.5, y: 546}
+        - {x: 139.5, y: 547}
+        - {x: 142.5, y: 555}
+        - {x: 147.5, y: 577}
+        - {x: 147.5, y: 578}
+    - name: kostium4_bujanie
+      rect:
+        serializedVersion: 2
+        x: 337
+        y: 1113
+        width: 361
+        height: 469
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 133.5, y: 99}
+        - {x: 128.5, y: 303}
+        - {x: 177.5, y: 336}
+        - {x: 180.5, y: 340}
+        - {x: 180.5, y: 365}
+        - {x: 85.5, y: 469}
+        - {x: 47.5, y: 469}
+        - {x: 31.5, y: 461}
+        - {x: -46.5, y: 469}
+        - {x: -131.5, y: 469}
+        - {x: -136.5, y: 467}
+        - {x: -176.5, y: 409}
+        - {x: -168.5, y: 402}
+        - {x: -165.5, y: 403}
+        - {x: -127.5, y: 453}
+        - {x: -179.5, y: 376}
+        - {x: -180.5, y: 365}
+        - {x: -180.5, y: 330}
+        - {x: -177.5, y: 329}
+        - {x: -168.5, y: 364}
+        - {x: -180.5, y: 313}
+        - {x: -180.5, y: 277}
+        - {x: -179.5, y: 277}
+        - {x: -176.5, y: 281}
+        - {x: -180.5, y: 210}
+        - {x: -177.5, y: 208}
+        - {x: -172.5, y: 212}
+        - {x: -150.5, y: 243}
+        - {x: -163.5, y: 164}
+        - {x: -157.5, y: 131}
+        - {x: -151.5, y: 128}
+        - {x: -148.5, y: 129}
+        - {x: -142.5, y: 132}
+        - {x: -125.5, y: 64}
+        - {x: -94.5, y: 118}
+        - {x: -83.5, y: 34}
+        - {x: -62.5, y: 19}
+        - {x: -59.5, y: 29}
+        - {x: -36.5, y: 76}
+        - {x: -33.5, y: 0}
+        - {x: -16.5, y: 0}
+        - {x: 27.5, y: 23}
+        - {x: 57.5, y: 94}
+        - {x: 87.5, y: 73}
+        - {x: 108.5, y: 63}
+    - name: bolek_bujanie
+      rect:
+        serializedVersion: 2
+        x: 773
+        y: 1284
+        width: 289
+        height: 297
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 144.5, y: 143}
+        - {x: 144.5, y: 195}
+        - {x: 135.5, y: 212}
+        - {x: 52.5, y: 261}
+        - {x: 21.5, y: 274}
+        - {x: -48.5, y: 264}
+        - {x: -64.5, y: 297}
+        - {x: -81.5, y: 297}
+        - {x: -111.5, y: 260}
+        - {x: -138.5, y: 259}
+        - {x: -144.5, y: 255}
+        - {x: -144.5, y: 245}
+        - {x: -122.5, y: 236}
+        - {x: -137.5, y: 202}
+        - {x: -129.5, y: 201}
+        - {x: -136.5, y: 158}
+        - {x: -140.5, y: 59}
+        - {x: -119.5, y: 26}
+        - {x: -44.5, y: 0}
+        - {x: 35.5, y: 0}
+        - {x: 68.5, y: 10}
+        - {x: 113.5, y: 53}
+        - {x: 129.5, y: 85}
+    - name: plakat_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1102
+        y: 1036
+        width: 433
+        height: 554
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -216.5, y: 554}
+        - {x: -216.5, y: 0}
+        - {x: 216.5, y: 0}
+        - {x: 216.5, y: 554}
+    - name: plakat5_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1582
+        y: 749
+        width: 433
+        height: 593
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -216.5, y: 593}
+        - {x: -216.5, y: 0}
+        - {x: 216.5, y: 0}
+        - {x: 216.5, y: 593}
+    - name: lolek_bujanie
+      rect:
+        serializedVersion: 2
+        x: 769
+        y: 919
+        width: 288
+        height: 277
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 97, y: 203}
+        - {x: 72, y: 215}
+        - {x: 65, y: 218}
+        - {x: 55, y: 220}
+        - {x: 49, y: 221}
+        - {x: 47, y: 221}
+        - {x: 49, y: 221}
+        - {x: 55, y: 220}
+        - {x: 62, y: 219}
+        - {x: 99, y: 209}
+        - {x: 139, y: 167}
+        - {x: 143, y: 166}
+        - {x: 144, y: 166}
+        - {x: 144, y: 195}
+        - {x: 94, y: 228}
+        - {x: 52, y: 232}
+        - {x: 119, y: 232}
+        - {x: 124, y: 254}
+        - {x: 75, y: 277}
+        - {x: 21, y: 277}
+        - {x: -90, y: 253}
+        - {x: -90, y: 240}
+        - {x: -80, y: 238}
+        - {x: -130, y: 196}
+        - {x: -144, y: 183}
+        - {x: -144, y: 9}
+        - {x: -141, y: 0}
+        - {x: 67, y: 0}
+        - {x: 144, y: 27}
+        - {x: 144, y: 158}
+        - {x: 128, y: 178}
+    - name: kostium2_bujanie
+      rect:
+        serializedVersion: 2
+        x: 488
+        y: 848
+        width: 211
+        height: 193
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -8.5, y: 191}
+        - {x: -26.5, y: 193}
+        - {x: -80.5, y: 193}
+        - {x: -105.5, y: 174}
+        - {x: -105.5, y: 25}
+        - {x: -84.5, y: 18}
+        - {x: -66.5, y: 0}
+        - {x: 61.5, y: 0}
+        - {x: 105.5, y: 47}
+        - {x: 105.5, y: 64}
+        - {x: 48.5, y: 151}
+    - name: bartolini_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1177
+        y: 548
+        width: 291
+        height: 458
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 145.5, y: 125}
+        - {x: 137.5, y: 165}
+        - {x: 140.5, y: 202}
+        - {x: 129.5, y: 223}
+        - {x: 90.5, y: 227}
+        - {x: 58.5, y: 254}
+        - {x: 70.5, y: 335}
+        - {x: 117.5, y: 389}
+        - {x: 121.5, y: 430}
+        - {x: 95.5, y: 458}
+        - {x: 46.5, y: 458}
+        - {x: 30.5, y: 450}
+        - {x: 2.5, y: 418}
+        - {x: -32.5, y: 434}
+        - {x: -75.5, y: 442}
+        - {x: -111.5, y: 424}
+        - {x: -116.5, y: 401}
+        - {x: -119.5, y: 358}
+        - {x: -145.5, y: 322}
+        - {x: -145.5, y: 282}
+        - {x: -138.5, y: 274}
+        - {x: -110.5, y: 270}
+        - {x: -90.5, y: 290}
+        - {x: -77.5, y: 236}
+        - {x: -102.5, y: 243}
+        - {x: -119.5, y: 228}
+        - {x: -127.5, y: 205}
+        - {x: -145.5, y: 140}
+        - {x: -145.5, y: 139}
+        - {x: -132.5, y: 126}
+        - {x: -129.5, y: 86}
+        - {x: -107.5, y: 44}
+        - {x: -71.5, y: 11}
+        - {x: -35.5, y: 0}
+        - {x: 35.5, y: 0}
+        - {x: 42.5, y: 1}
+        - {x: 86.5, y: 21}
+        - {x: 119.5, y: 59}
+        - {x: 145.5, y: 94}
+    - name: kostium1_bujanie
+      rect:
+        serializedVersion: 2
+        x: 78
+        y: 56
+        width: 415
+        height: 577
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 34.5, y: 0}
+        - {x: 58.5, y: 31}
+        - {x: 77.5, y: 32}
+        - {x: 85.5, y: 34}
+        - {x: 112.5, y: 46}
+        - {x: 148.5, y: 67}
+        - {x: 155.5, y: 72}
+        - {x: 163.5, y: 102}
+        - {x: 179.5, y: 109}
+        - {x: 193.5, y: 117}
+        - {x: 203.5, y: 123}
+        - {x: 207.5, y: 127}
+        - {x: 207.5, y: 136}
+        - {x: 173.5, y: 234}
+        - {x: 163.5, y: 264}
+        - {x: 129.5, y: 320}
+        - {x: 84.5, y: 372}
+        - {x: 18.5, y: 437}
+        - {x: 27.5, y: 502}
+        - {x: 27.5, y: 527}
+        - {x: 47.5, y: 568}
+        - {x: 45.5, y: 577}
+        - {x: -1.5, y: 577}
+        - {x: -1.5, y: 542}
+        - {x: -7.5, y: 548}
+        - {x: -56.5, y: 543}
+        - {x: -66.5, y: 566}
+        - {x: -83.5, y: 576}
+        - {x: -105.5, y: 573}
+        - {x: -121.5, y: 561}
+        - {x: -104.5, y: 528}
+        - {x: -96.5, y: 505}
+        - {x: -83.5, y: 434}
+        - {x: -126.5, y: 360}
+        - {x: -157.5, y: 298}
+        - {x: -177.5, y: 243}
+        - {x: -186.5, y: 212}
+        - {x: -198.5, y: 133}
+        - {x: -207.5, y: 112}
+        - {x: -207.5, y: 94}
+        - {x: -200.5, y: 85}
+        - {x: -185.5, y: 80}
+        - {x: -171.5, y: 69}
+        - {x: -171.5, y: 42}
+        - {x: -144.5, y: 27}
+        - {x: -120.5, y: 27}
+        - {x: -99.5, y: 3}
+        - {x: -92.5, y: 0}
+        - {x: -19.5, y: 0}
+        - {x: 0.5, y: 2}
+        - {x: 6.5, y: 0}
+    - name: plakat2_bujanie
+      rect:
+        serializedVersion: 2
+        x: 581
+        y: 66
+        width: 433
+        height: 678
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -216.5, y: 678}
+        - {x: -216.5, y: 0}
+        - {x: 216.5, y: 0}
+        - {x: 216.5, y: 678}
+    - name: smok_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1163
+        y: 67
+        width: 293
+        height: 443
+      alignment: 9
+      pivot: {x: 0.25, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 150.75, y: 213}
+        - {x: 180.75, y: 234}
+        - {x: 212.75, y: 274}
+        - {x: 219.75, y: 290}
+        - {x: 219.75, y: 345}
+        - {x: 218.75, y: 352}
+        - {x: 209.75, y: 369}
+        - {x: 168.75, y: 407}
+        - {x: 166.75, y: 429}
+        - {x: 158.75, y: 443}
+        - {x: 117.75, y: 443}
+        - {x: 110.75, y: 424}
+        - {x: 42.75, y: 416}
+        - {x: -17.25, y: 383}
+        - {x: -47.25, y: 347}
+        - {x: -67.25, y: 306}
+        - {x: -19.25, y: 291}
+        - {x: -35.25, y: 271}
+        - {x: -26.25, y: 239}
+        - {x: -17.25, y: 219}
+        - {x: -41.25, y: 234}
+        - {x: -73.25, y: 213}
+        - {x: -73.25, y: 147}
+        - {x: -65.25, y: 137}
+        - {x: -23.25, y: 125}
+        - {x: -66.25, y: 83}
+        - {x: -73.25, y: 67}
+        - {x: -73.25, y: 65}
+        - {x: -29.25, y: 0}
+        - {x: 18.75, y: 0}
+        - {x: 77.75, y: 40}
+        - {x: 111.75, y: 74}
+        - {x: 139.75, y: 110}
+    - name: plakat3_bujanie
+      rect:
+        serializedVersion: 2
+        x: 1585
+        y: 38
+        width: 433
+        height: 553
+      alignment: 7
+      pivot: {x: 0.5, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: -216.5, y: 553}
+        - {x: -216.5, y: 0}
+        - {x: 216.5, y: 0}
+        - {x: 216.5, y: 553}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -25,15 +25,6 @@ public class ExclamationMark : Singleton<ExclamationMark>
             return;
         }
 
-        for(int i = 0; i < _groupsWaiting.Count; ++i)
-        {
-            if(_groupsWaiting[i].CurrentRoomType != RoomType.Entrance)
-            {
-                _groupsWaiting.RemoveAt(i);
-                --i;
-            }
-        }
-
         _image.enabled = _groupsWaiting.Count > 0;
         if(_image.enabled)
         {
@@ -43,12 +34,34 @@ public class ExclamationMark : Singleton<ExclamationMark>
         }
     } 
 
+    public void Reset()
+    {
+        _groupsWaiting.Clear();
+        _image.enabled = false;
+    }
+
+    public bool IsGroupWaiting()
+    {
+        return _groupsWaiting.Count > 0;
+    }
+
     public void AddGroupWaiting(GroupMovement group)
     {
-        if(_groupsWaiting.Count == 0)
+        if(!_groupsWaiting.Contains(group))
         {
-            _color = Color.white;
+            if (_groupsWaiting.Count == 0)
+            {
+                _color = Color.white;
+            }
+            _groupsWaiting.Add(group);
         }
-        _groupsWaiting.Add(group);
+    }
+
+    public void RemoveGroupWaiting(GroupMovement group)
+    {
+        if(_groupsWaiting.Contains(group))
+        {
+            _groupsWaiting.Remove(group);
+        }
     }
 }

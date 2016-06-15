@@ -13,13 +13,17 @@ public class Entrance : MonoBehaviour
             GroupMovement gm = col.gameObject.GetComponent<GroupMovement>();
             if(gm != null)
             {
-                if(gm.RoomsToVisit.Count == 0)
+                if (gm.RoomsToVisit.Count == 0)
                 {
                     VisitStage.GroupLeft(gm);
                 }
-                else if(gm.CurrentRoomType != RoomType.Entrance)
+                else
                 {
-                    gm.ClearPath();
+                    ExclamationMark.Instance.RemoveGroupWaiting(gm);
+                    if (gm.CurrentRoomType != RoomType.Entrance)
+                    {
+                        gm.ClearPath();
+                    }
                 }
             }
         }

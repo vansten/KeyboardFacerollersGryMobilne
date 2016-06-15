@@ -84,6 +84,7 @@ public class GroupMovement : MonoBehaviour
     private AudioSource _booSource;
     [SerializeField]
     private AudioSource _yaySource;
+    private bool _canBeSad = true;
 
     void OnEnable()
     {
@@ -129,6 +130,7 @@ public class GroupMovement : MonoBehaviour
         _maxTimeToVisitTimer = 0.0f;
         _visitingApproperiateRoom = false;
         _currentRoomType = RoomType.Entrance;
+        _canBeSad = true;
     }
 
     void OnDisable()
@@ -189,13 +191,8 @@ public class GroupMovement : MonoBehaviour
     void FixedUpdate()
     {
         _maxTimeToVisitTimer += Time.deltaTime;
-        if (_maxTimeToVisitTimer > _maxTimeToVisitRoom)
+        if (_maxTimeToVisitTimer > _maxTimeToVisitRoom && _canBeSad)
         {
-            /*if (_minusParticle.isStopped)
-            {
-                _booSource.Play();
-                _minusParticle.Play();
-            }*/
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
         }
 
@@ -205,18 +202,6 @@ public class GroupMovement : MonoBehaviour
         if (isInDanger)
         {
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, this);
-            /*if(!_minusParticle.isPlaying)
-            {
-                _booSource.Play();
-                _minusParticle.Play();
-            }
-            
-            if(_plusParticle.isPlaying)
-            {
-                _yaySource.Stop();
-                _plusParticle.Stop();
-            }*/
-            _standingTimer = 0.0f;
         }
 
         if(!_isMoving)
@@ -226,16 +211,6 @@ public class GroupMovement : MonoBehaviour
                 _standingTimer += Time.deltaTime;
                 if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
                 {
-                    /*if (_minusParticle.isPlaying)
-                    {
-                        _booSource.Stop();
-                        _minusParticle.Stop();
-                    }
-                    if (_plusParticle.isStopped)
-                    {
-                        _yaySource.Play();
-                        _plusParticle.Play();
-                    }*/
                     GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, this);
                     if (_standingTimer > _visitRequiredTime)
                     {
@@ -248,18 +223,8 @@ public class GroupMovement : MonoBehaviour
                 }
                 else
                 {
-                    if (_standingTimer > 5.0f)
+                    if (_standingTimer > (2.0f * _visitRequiredTime) && _canBeSad)
                     {
-                        /*if (_plusParticle.isPlaying)
-                        {
-                            _yaySource.Stop();
-                            _plusParticle.Stop();
-                        }
-                        if (_minusParticle.isStopped)
-                        {
-                            _booSource.Play();
-                            _minusParticle.Play();
-                        }*/
                         GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
                     }
                 }
@@ -327,6 +292,7 @@ public class GroupMovement : MonoBehaviour
     {
         _path = new List<Vector3>();
         _isMoving = false;
+        _canBeSad = false;
         _pointsCount = 0;
         _lineRendererPoints = new List<Vector3>();
         _colorToSet = _myLineColor;
@@ -342,7 +308,6 @@ public class GroupMovement : MonoBehaviour
     {
         _minusParticle.Stop();
         _booSource.Stop();
-        _standingTimer = 0.0f;
         position.z = 0.0f;
         if(_path.Count > 0)
         {
@@ -381,6 +346,7 @@ public class GroupMovement : MonoBehaviour
 
     public void EndPath()
     {
+        _canBeSad = true;
         if(_path.Count == 0)
         {
             return;
@@ -479,18 +445,13 @@ public class GroupMovement : MonoBehaviour
         }
         else if(col.isTrigger && col.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
         {
-            Transform parent = col.transform.parent;
-            if(parent == null || parent.name.Contains("Walls"))
+            Exhibit e = col.GetComponent<Exhibit>();
+            if(e == null)
             {
                 return;
             }
-
-            SpriteRenderer spriteRenderer = col.gameObject.GetComponent<SpriteRenderer>();
-            if(spriteRenderer != null)
-            {
-                GyroscopeStageController.Instance.Show(spriteRenderer.sprite, col.gameObject, this);
+                GyroscopeStageController.Instance.Show(e.GyroscopeStageSprite, e.gameObject, this);
                 StartCoroutine(WaitToEnableExhibitColliderAgain(col));
-            }
         }
         else if(col.gameObject.layer == LayerMask.NameToLayer("GroupMember"))
         {

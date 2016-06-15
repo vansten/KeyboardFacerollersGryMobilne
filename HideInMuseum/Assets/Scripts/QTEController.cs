@@ -4,6 +4,8 @@ using System.Collections;
 public class QTEController : Singleton<QTEController>
 {
     public Vector2 CooldownRange;
+    public AudioClip WaterSpashClip;
+    public AudioClip LightsOffClip;
 
     public void SpawnQTE(Room room)
     {
@@ -18,11 +20,13 @@ public class QTEController : Singleton<QTEController>
         {
             room.Darkness.SetActive(true);
             room.DarknessIcon.SetActive(true);
+            AudioSource.PlayClipAtPoint(LightsOffClip, Camera.main.transform.position);
         }
         else
         {
             room.Water.SetActive(true);
             room.WaterIcon.SetActive(true);
+            AudioSource.PlayClipAtPoint(WaterSpashClip, Camera.main.transform.position);
         }
 
         room.IsQTEActive = true;

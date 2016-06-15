@@ -328,6 +328,8 @@ public class GameManager : Singleton<GameManager>
         {
             OnEscapePressed();
         }
+
+        //Debug.Log(Input.acceleration.x.ToString("0.00") + " " + Input.acceleration.y.ToString("0.00") + " " + Input.acceleration.z.ToString("0.00"));
     }
 
     void OnApplicationQuit()
