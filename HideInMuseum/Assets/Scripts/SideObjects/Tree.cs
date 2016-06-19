@@ -23,6 +23,7 @@ public class Tree : MonoBehaviour
         }
 	}
 
+    [ContextMenu("Spawn bird")]
     void SpawnBird()
     {
         _timer = 0.0f;

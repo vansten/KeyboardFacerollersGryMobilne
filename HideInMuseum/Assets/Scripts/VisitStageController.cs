@@ -12,11 +12,13 @@ public class VisitStageController : ObjectBase
     [SerializeField]
     private Image _satisfactionLevelImage;
     [SerializeField]
-    private Image _satisfactionSadImage;
+    private Image _satisfactionFaceImage;
     [SerializeField]
-    private Image _satisfactionHappyImage;
+    private Sprite[] _satisfactionFaceSprites;
     [SerializeField]
     private Entrance _entrance;
+    [SerializeField]
+    private TextMesh _timeText;
     [SerializeField]
     private Door _door;
     [SerializeField]
@@ -27,7 +29,7 @@ public class VisitStageController : ObjectBase
     [SerializeField]
     protected GameObject _goToExitText;
     [SerializeField]
-    private Text _timerText;
+    private GroupUIImage[] _groupsImages;
     [SerializeField]
     private AudioClip _dingDongClip;
     [SerializeField]
@@ -105,10 +107,22 @@ public class VisitStageController : ObjectBase
             _doorClosed = false;
             _door.Open();
             _groupsSpawned = new List<GroupMovement>();
+
+            for(int i = 0; i < _groupsImages.Length; ++i)
+            {
+                _groupsImages[i].Initialize(null);
+            }
+
             SpawnNewGroup();
             _coroutineStarted = false;
             _timer = 0.0f;
             _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
+
+            Vector3 cameraPos = Camera.main.transform.position;
+            cameraPos = _door.transform.position;
+            cameraPos.z = Camera.main.transform.position.z;
+            Camera.main.transform.position = cameraPos;
+            InputHandler.Instance.AdjustCameraTransform();
         }
 
         _UIGameObject.SetActive(true);
@@ -122,6 +136,14 @@ public class VisitStageController : ObjectBase
     public void PauseButtonClick()
     {
         GameManager.Instance.CurrentState = GameState.Paused;
+    }
+
+    public void GroupClick(int i)
+    {
+        if(_groupsSpawned.Count > i)
+        {
+            InputHandler.Instance.SelectGroup(_groupsSpawned[i]);
+        }
     }
 
     public void FillRoomsToVisit(GroupMovement group)
@@ -166,31 +188,29 @@ public class VisitStageController : ObjectBase
         GameManager.Instance.GroupsHandled += 1;
         _groupsSpawned.Remove(group);
         Destroy(group.gameObject);
+        for(int i = 0; i < _groupsSpawned.Count; ++i)
+        {
+            _groupsImages[i].Initialize(_groupsSpawned[i]);
+        }
+        for(int i = _groupsSpawned.Count; i < _groupsImages.Length; ++i)
+        {
+            _groupsImages[i].Initialize(null);
+        }
+    }
+
+    void Start()
+    {
+        _timeText.GetComponent<Renderer>().sortingOrder = 5;
     }
 
     void Update()
     {
-        float tmp = GameManager.Instance.SatisfactionLevel + 5.0f;
-        tmp *= 0.1f;
-        _satisfactionLevelImage.fillAmount = Mathf.Clamp01(tmp);
+        UpdateSatisfactionUI();
+        _timeText.text = Utilities.ConvertSecondsToTimeText(GameManager.Instance.TimeLeft);
 
-        if (tmp <= 0.5f)
+        if(InputHandler.Instance.CurrentGroup != null)
         {
-            _satisfactionLevelImage.color = tmp * 2.0f * Color.yellow + (1.0f - tmp * 2.0f) * Color.red;
-        }
-        else
-        {
-            _satisfactionLevelImage.color = (tmp - 0.5f) * 2.0f * Color.green + (1.0f - (tmp - 0.5f) * 2.0f) * Color.yellow;
-        }
-
-        _satisfactionSadImage.color = new Color(1, 1, 1, 1.0f - tmp);
-        _satisfactionHappyImage.color = new Color(1, 1, 1, tmp);
-
-        _timerText.text = Helpers.ConvertSecondsToTimeText(GameManager.Instance.TimeLeft);
-
-        if(InputHandler.Instance.CurrentMode == InputMode.GroupControls)
-        {
-            if(_previousGroupMovement != InputHandler.Instance.CurrentGroup && InputHandler.Instance.CurrentGroup != null)
+            if(_previousGroupMovement != InputHandler.Instance.CurrentGroup)
             {
                 if(_previousGroupMovement == null)
                 {
@@ -248,6 +268,11 @@ public class VisitStageController : ObjectBase
         }
     }
 
+    void LateUpdate()
+    {
+        UpdateGroupsImages();
+    }
+
     IEnumerator EndStageCoroutine()
     {
         yield return new WaitForSeconds(1.0f);
@@ -267,5 +292,53 @@ public class VisitStageController : ObjectBase
         _groupsSpawned.Add(gm);
         ExclamationMark.Instance.AddGroupWaiting(gm);
         _source.Play();
+        _groupsImages[_groupsSpawned.Count - 1].Initialize(gm);
+    }
+
+    void UpdateGroupsImages()
+    {
+        for(int i = 0; i < _groupsImages.Length; ++i)
+        {
+            _groupsImages[i].UpdateUI();
+        }
+    }
+
+    void UpdateSatisfactionUI()
+    {
+        float tmp = GameManager.Instance.SatisfactionLevel + 5.0f;
+        tmp *= 0.1f;
+        _satisfactionLevelImage.fillAmount = Mathf.Clamp01(tmp);
+
+        if (tmp <= 0.5f)
+        {
+            _satisfactionLevelImage.color = tmp * 2.0f * Color.yellow + (1.0f - tmp * 2.0f) * Color.red;
+        }
+        else
+        {
+            _satisfactionLevelImage.color = (tmp - 0.5f) * 2.0f * Color.green + (1.0f - (tmp - 0.5f) * 2.0f) * Color.yellow;
+        }
+
+        float level = GameManager.Instance.SatisfactionLevel;
+        float amplitude = GameManager.Instance.SatisfactionAmplitude;
+        if(level < -(0.9f * amplitude))
+        {
+            _satisfactionFaceImage.sprite = _satisfactionFaceSprites[0];
+        }
+        else if(level < -(0.5f * amplitude))
+        {
+            _satisfactionFaceImage.sprite = _satisfactionFaceSprites[1];
+        }
+        else if (level < (0.5f * amplitude))
+        {
+            _satisfactionFaceImage.sprite = _satisfactionFaceSprites[2];
+        }
+        else if (level < (0.9f * amplitude))
+        {
+            _satisfactionFaceImage.sprite = _satisfactionFaceSprites[3];
+        }
+        else
+        {
+            _satisfactionFaceImage.sprite = _satisfactionFaceSprites[4];
+        }
     }
 }

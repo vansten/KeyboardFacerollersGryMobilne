@@ -16,6 +16,8 @@ public class InputHandler : Singleton<InputHandler>
     [SerializeField]
     private LayerMask _clickableLayers;
     [SerializeField]
+    private LayerMask _layersContinuePath;
+    [SerializeField]
     private Vector2 _zoomRange;
     [SerializeField]
     private float _yAxisCameraAbsolute;
@@ -234,7 +236,7 @@ public class InputHandler : Singleton<InputHandler>
 
     void CastRayContinue()
     {
-        RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction, float.MaxValue, 1 << LayerMask.NameToLayer("Museum"));
+        RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction, float.MaxValue, _layersContinuePath);
         if(hit.collider != null)
         {
             _continuePath = true;
@@ -276,12 +278,16 @@ public class InputHandler : Singleton<InputHandler>
         
         if(_continuePath)
         {
-            RaycastHit2D hit = Physics2D.Raycast(_rayToCast.origin, _rayToCast.direction);
-            if (hit.collider != null && hit.collider.gameObject.activeInHierarchy)
+            RaycastHit2D[] hits = Physics2D.RaycastAll(_rayToCast.origin, _rayToCast.direction, float.MaxValue, _layersContinuePath);
+            foreach (RaycastHit2D hit in hits)
             {
-                if(hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+                if (hit.collider != null && hit.collider.gameObject.activeInHierarchy)
                 {
-                    _currentGroup.WrongPath();
+                    if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Obstacle"))
+                    {
+                        _currentGroup.WrongPath();
+                        break;
+                    }
                 }
             }
 
@@ -289,7 +295,7 @@ public class InputHandler : Singleton<InputHandler>
         }
     }
 
-    void AdjustCameraTransform()
+    public void AdjustCameraTransform()
     {
         Vector3 cameraPosition = _mainCamera.transform.position;
         //Adjust camera no matter how is the ortho size (showing only background (no clear color) indepentant to zooming, using constraints points isn't independant)
@@ -302,6 +308,19 @@ public class InputHandler : Singleton<InputHandler>
         _mainCamera.transform.position = new Vector3(Mathf.Clamp(cameraPosition.x, minX, maxX),
                                                         Mathf.Clamp(cameraPosition.y, minY, maxY),
                                                         cameraPosition.z);            
+    }
+
+    public void SelectGroup(GroupMovement gm)
+    {
+        _currentGroup = gm;
+        if (_currentGroup != null)
+        {
+            Vector3 cameraPos = _mainCamera.transform.position;
+            cameraPos.x = _currentGroup.transform.position.x;
+            cameraPos.y = _currentGroup.transform.position.y;
+            _mainCamera.transform.position = cameraPos;
+            AdjustCameraTransform();
+        }
     }
 
     #endregion

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 using System.Collections.Generic;
 using System;
 using AStar;
@@ -27,73 +28,9 @@ public class RoomInfo
     public RoomType Type;
     public Room Room;
     public Sprite Icon;
-}
-
-public static class Helpers
-{
-    private static Dictionary<char, int> _hexToDec = new Dictionary<char, int>();
-
-    public static string ConvertSecondsToTimeText(float secondsLeft)
-    {
-        string s = "";
-        int minutes = (int)(secondsLeft / 60.0f);
-        int seconds = (int)(secondsLeft - (minutes * 60));
-        s = minutes.ToString("00");
-        s += ":";
-        s += seconds.ToString("00");
-        return s;
-    }
-    
-    public static Color FromHex(string hex)
-    {
-        if(_hexToDec == null || _hexToDec.Count == 0)
-        {
-            _hexToDec.Add('0', 0);
-            _hexToDec.Add('1', 1);
-            _hexToDec.Add('2', 2);
-            _hexToDec.Add('3', 3);
-            _hexToDec.Add('4', 4);
-            _hexToDec.Add('5', 5);
-            _hexToDec.Add('6', 6);
-            _hexToDec.Add('7', 7);
-            _hexToDec.Add('8', 8);
-            _hexToDec.Add('9', 9);
-            _hexToDec.Add('A', 10);
-            _hexToDec.Add('B', 11);
-            _hexToDec.Add('C', 12);
-            _hexToDec.Add('D', 13);
-            _hexToDec.Add('E', 14);
-            _hexToDec.Add('F', 15);
-            _hexToDec.Add('a', 10);
-            _hexToDec.Add('b', 11);
-            _hexToDec.Add('c', 12);
-            _hexToDec.Add('d', 13);
-            _hexToDec.Add('e', 14);
-            _hexToDec.Add('f', 15);
-        }
-
-        bool alphaIncluded = hex.Length == 8;
-        string r = hex.Substring(0, 2);
-        string g = hex.Substring(2, 2);
-        string b = hex.Substring(4, 2);
-
-        float red = 0.0f;
-        float green = 0.0f;
-        float blue = 0.0f;
-
-        red = (_hexToDec[r[0]] * 16.0f + _hexToDec[r[1]]) / 255.0f;
-        green = (_hexToDec[g[0]] * 16.0f + _hexToDec[g[1]]) / 255.0f;
-        blue = (_hexToDec[b[0]] * 16.0f + _hexToDec[b[1]]) / 255.0f;
-
-        float alpha = 1.0f;
-        if (alphaIncluded)
-        {
-            string a = hex.Substring(6, 2);
-            alpha = (_hexToDec[a[0]] * 16.0f + _hexToDec[a[1]]) / 255.0f;
-        }
-
-        return new Color(red, green, blue, alpha);
-    }
+    public Sprite ShopImage;
+    public string Name;
+    public int MoneyToUnlock;
 }
 
 public class GameManager : Singleton<GameManager>
@@ -102,8 +39,6 @@ public class GameManager : Singleton<GameManager>
 
     [SerializeField]
     private GameObject _museumObject;
-    [SerializeField]
-    protected List<GroupMovement> _groupLeaders;
     [SerializeField]
     private Text _counterText;
     private GameState _previousState;
@@ -267,7 +202,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public float TotalMoney
+    public int TotalMoney
     {
         get;
         set;
@@ -301,13 +236,32 @@ public class GameManager : Singleton<GameManager>
     {
         base.Awake();
         SoundOn = PlayerPrefs.GetInt("SoundOn", 1) == 1;
+        if(PlayerPrefs.GetInt("WasFirstLaunch", 0) == 1)
+        {
+            for (int i = 0; i < Rooms.Count; ++i)
+            {
+                Rooms[i].Room.Unlocked = PlayerPrefs.GetInt("Room" + i, 0) == 1;
+            }
+        }
+        else
+        {
+            PlayerPrefs.SetInt("WasFirstLaunch", 1);
+            foreach (RoomInfo ri in Rooms)
+            {
+                if (ri.Type != RoomType.Animations && ri.Type != RoomType.Tapes)
+                {
+                    ri.Room.Unlocked = true;
+                }
+                PlayerPrefs.SetInt("Room" + Rooms.IndexOf(ri), ri.Room.Unlocked ? 1 : 0);
+            }
+        }
     }
 
     void Start()
     {
         CurrentState = GameState.Menu;
         _counterText.gameObject.SetActive(false);
-        TotalMoney = PlayerPrefs.GetFloat("TotalMoneyEarned", 0.0f);
+        TotalMoney = PlayerPrefs.GetInt("TotalMoneyEarned", 0);
         Screen.autorotateToLandscapeLeft = true;
         Screen.autorotateToLandscapeRight = true;
         Screen.autorotateToPortrait = false;
@@ -328,14 +282,16 @@ public class GameManager : Singleton<GameManager>
         {
             OnEscapePressed();
         }
-
-        //Debug.Log(Input.acceleration.x.ToString("0.00") + " " + Input.acceleration.y.ToString("0.00") + " " + Input.acceleration.z.ToString("0.00"));
     }
 
     void OnApplicationQuit()
     {
-        PlayerPrefs.SetFloat("TotalMoneyEarned", TotalMoney);
+        PlayerPrefs.SetInt("TotalMoneyEarned", TotalMoney);
         PlayerPrefs.SetInt("SoundOn", SoundOn ? 1 : 0);
+        for(int i = 0; i < Rooms.Count; ++i)
+        {
+            PlayerPrefs.SetInt("Room" + i, Rooms[i].Room.Unlocked ? 1 : 0);
+        }
         PlayerPrefs.Save();
     }
 
@@ -345,19 +301,20 @@ public class GameManager : Singleton<GameManager>
         yield return null;
         yield return null;
 
-        if (pauseStatus)
+        if (pauseStatus && CurrentState == GameState.VisitStage)
         {
             CurrentState = GameState.Paused;
-        }
-        else
-        {
-            Unpause();
         }
     }
 
     #endregion
 
     #region GameManager methods
+
+    public int GetNumberOfUnlockedRooms()
+    {
+        return Rooms.Where(r => r.Room.Unlocked).ToList().Count;
+    }
 
     public Sprite GetSpriteByRoomType(RoomType rt)
     {
@@ -396,14 +353,14 @@ public class GameManager : Singleton<GameManager>
     public void GenerateMission(GroupMovement group)
     {
         group.RoomsToVisit.Clear();
-        RoomType random = (RoomType) UnityEngine.Random.Range(0, 5);
-        for (int i = 0; i < group.GroupCount + 1; ++i)
+        Room room = Rooms[UnityEngine.Random.Range(0, Rooms.Count)].Room;
+        for(int i = 0; i < group.GroupCount + 1; ++i)
         {
-            while (group.RoomsToVisit.Contains(random))
+            while(group.RoomsToVisit.Contains(room.Type) || !room.Unlocked)
             {
-                random = (RoomType)UnityEngine.Random.Range(0, 6);
+                room = Rooms[UnityEngine.Random.Range(0, Rooms.Count)].Room;
             }
-            group.RoomsToVisit.Add(random);            
+            group.RoomsToVisit.Add(room.Type);
         }
     }
 

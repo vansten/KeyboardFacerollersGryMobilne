@@ -3,26 +3,27 @@ using System.Collections;
 
 public class Bird : MonoBehaviour
 {
+    private static Vector3[] _corners = new Vector3[4]
+    {
+        new Vector3(-1000.0f, -1000.0f, 0.0f),
+        new Vector3(-1000.0f, 1000.0f, 0.0f),
+        new Vector3(1000.0f, -1000.0f, 0.0f),
+        new Vector3(1000.0f, 1000.0f, 0.0f)
+    };
     private Vector3 _direction;
 
     void OnEnable()
     {
-        Vector3[] corners = new Vector3[4];
-        corners[0] = new Vector3(-60.0f, -60.0f, 0.0f);
-        corners[1] = new Vector3(-60.0f, 60.0f, 0.0f);
-        corners[2] = new Vector3(60.0f, -60.0f, 0.0f);
-        corners[3] = new Vector3(60.0f, 60.0f, 0.0f);
-
         Vector3 target = Vector3.zero;
         float minDist = float.MaxValue;
 
-        for(int i = 0; i < 4; ++i)
+        for(int i = 0; i < _corners.Length; ++i)
         {
-            float dist = Vector3.Distance(transform.position, corners[i]);
+            float dist = Vector3.Distance(transform.position, _corners[i]);
             if(dist < minDist)
             {
                 minDist = dist;
-                target = corners[i];
+                target = _corners[i];
             }
         }
 

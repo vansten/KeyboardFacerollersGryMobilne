@@ -56,6 +56,7 @@ public class GroupMovement : MonoBehaviour
     protected bool _visitingApproperiateRoom;
     [SerializeField]
     protected float _visitRequiredTime;
+    private float _visitingTimer;
     [SerializeField]
     protected RoomType _currentRoomType;
     public RoomType CurrentRoomType
@@ -84,7 +85,17 @@ public class GroupMovement : MonoBehaviour
     private AudioSource _booSource;
     [SerializeField]
     private AudioSource _yaySource;
+    private float _lastBooTime;
+    private float _lastYayTime;
     private bool _canBeSad = true;
+
+    public bool IsSad
+    {
+        get;
+        private set;
+    }
+
+    private static Color[] _lastColors = new Color[4] { Color.black, Color.black, Color.black, Color.black };
 
     void OnEnable()
     {
@@ -100,7 +111,43 @@ public class GroupMovement : MonoBehaviour
             _lineRenderer = gameObject.AddComponent<LineRenderer>();
         }
         _lineRenderer.SetWidth(0.5f, 0.5f);
-        _myLineColor = new Color(Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), Random.Range(0.5f, 1.0f), 1.0f);
+        float min = 0.6f;
+
+        if (_lastColors == null)
+        {
+            _myLineColor = new Color(Random.Range(min, 1.0f), Random.Range(min, 1.0f), Random.Range(min, 1.0f), 1.0f);
+        }
+        else
+        {
+            _myLineColor = new Color(Random.Range(min, 1.0f), Random.Range(min, 1.0f), Random.Range(min, 1.0f), 1.0f);
+            float colorDist = float.MaxValue;
+            for(int i = 0; i < _lastColors.Length; ++i)
+            {
+                float dist = Utilities.CalculateColorDistance(_myLineColor, _lastColors[i]);
+                if(dist < colorDist)
+                {
+                    colorDist = dist;
+                }
+            }
+            while(colorDist < 0.3f)
+            {
+                _myLineColor = new Color(Random.Range(min, 1.0f), Random.Range(min, 1.0f), Random.Range(min, 1.0f), 1.0f);
+                colorDist = float.MaxValue;
+                for (int i = 0; i < _lastColors.Length; ++i)
+                {
+                    float dist = Utilities.CalculateColorDistance(_myLineColor, _lastColors[i]);
+                    if (dist < colorDist)
+                    {
+                        colorDist = dist;
+                    }
+                }
+            }
+        }
+        _lastColors[3] = _lastColors[2];
+        _lastColors[2] = _lastColors[1];
+        _lastColors[1] = _lastColors[0];
+        _lastColors[0] = _myLineColor;
+
         Color highlightColor = _myLineColor;
         highlightColor.a = 0.5f;
         _highlightSprite.color = highlightColor;
@@ -139,9 +186,11 @@ public class GroupMovement : MonoBehaviour
         {
             if(gm != null)
             {
-                gm.gameObject.SetActive(false);
+                Destroy(gm.gameObject);
             }
         }
+
+        _groupMembers.Clear();
 
         _booSource.Stop();
         _yaySource.Stop();
@@ -181,6 +230,7 @@ public class GroupMovement : MonoBehaviour
 
     protected void RoomCompleted()
     {
+        _visitingTimer = 0.0f;
         RoomsToVisit.RemoveAt(0);
         _visitingApproperiateRoom = false;
         _maxTimeToVisitTimer = 0f;
@@ -190,9 +240,11 @@ public class GroupMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        IsSad = false;
         _maxTimeToVisitTimer += Time.deltaTime;
         if (_maxTimeToVisitTimer > _maxTimeToVisitRoom && _canBeSad)
         {
+            IsSad = true;
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
         }
 
@@ -201,6 +253,7 @@ public class GroupMovement : MonoBehaviour
 
         if (isInDanger)
         {
+            IsSad = true;
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_First, this);
         }
 
@@ -211,8 +264,9 @@ public class GroupMovement : MonoBehaviour
                 _standingTimer += Time.deltaTime;
                 if (_roomsToVisit.Count > 0 && _currentRoomType == RoomsToVisit[0])
                 {
+                    _visitingTimer += Time.deltaTime;
                     GameManager.Instance.IncreaseSatisfaction(SatisfactionStage.SS_Second, this);
-                    if (_standingTimer > _visitRequiredTime)
+                    if (_visitingTimer > _visitRequiredTime)
                     {
                         RoomCompleted();
                         _booSource.Stop();
@@ -225,6 +279,7 @@ public class GroupMovement : MonoBehaviour
                 {
                     if (_standingTimer > (2.0f * _visitRequiredTime) && _canBeSad)
                     {
+                        IsSad = true;
                         GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Second, this);
                     }
                 }
@@ -347,7 +402,7 @@ public class GroupMovement : MonoBehaviour
     public void EndPath()
     {
         _canBeSad = true;
-        if(_path.Count == 0)
+        if(_path == null || _path.Count == 0)
         {
             return;
         }
@@ -389,7 +444,11 @@ public class GroupMovement : MonoBehaviour
             if(!_minusParticle.isPlaying)
             {
                 _minusParticle.Play();
-                _booSource.Play();
+                if(Time.time - _lastBooTime > 5.0f)
+                {
+                    _lastBooTime = Time.time;
+                    _booSource.Play();
+                }
             }
         }
         else
@@ -409,7 +468,11 @@ public class GroupMovement : MonoBehaviour
             if (!_plusParticle.isPlaying)
             {
                 _plusParticle.Play();
-                _yaySource.Play();
+                if(Time.time - _lastYayTime > 5.0f)
+                {
+                    _lastYayTime = Time.time;
+                    _yaySource.Play();
+                }
             }
         }
         else
@@ -428,6 +491,7 @@ public class GroupMovement : MonoBehaviour
         {
             GameManager.Instance.DecreaseSatisfaction(SatisfactionStage.SS_Third, this);
         }
+
         ClearPath();
 
         foreach (GroupMember member in _groupMembers)
@@ -450,8 +514,8 @@ public class GroupMovement : MonoBehaviour
             {
                 return;
             }
-                GyroscopeStageController.Instance.Show(e.GyroscopeStageSprite, e.gameObject, this);
-                StartCoroutine(WaitToEnableExhibitColliderAgain(col));
+            GyroscopeStageController.Instance.Show(e.GyroscopeStageSprite, e.gameObject, this);
+            StartCoroutine(WaitToEnableExhibitColliderAgain(col));
         }
         else if(col.gameObject.layer == LayerMask.NameToLayer("GroupMember"))
         {

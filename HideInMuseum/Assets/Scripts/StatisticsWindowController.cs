@@ -35,16 +35,17 @@ public class StatisticsWindowController : ObjectBase
 
     public override void OnStatisticsWindowBegin()
     {
-        bool win = GameManager.Instance.SatisfactionLevel > -5.0f && GameManager.Instance.GroupsHandled > 0;
-        _failedSucceededText.text = win ? "END OF THE DAY" : "VISITORS WERE VERY UNHAPPY";
-        _failedSucceededText.color = win ? Helpers.FromHex("a1ff64") : Helpers.FromHex("ff6666"); //green : red
+        bool win = GameManager.Instance.SatisfactionLevel > -GameManager.Instance.SatisfactionAmplitude && GameManager.Instance.GroupsHandled > 0;
+        _failedSucceededText.text = win ? "KONIEC DNIA" : "ODWIEDZAJĄCY BYLI ZAWIEDZENI";
+        _failedSucceededText.color = win ? Utilities.ColorFromHex("a1ff64") : Utilities.ColorFromHex("ff6666"); //green : red
 
         _groupsHandledText.text = GameManager.Instance.GroupsHandled.ToString();
         _satisfactionLevelText.text = SatisfactionToString(GameManager.Instance.SatisfactionLevel);
         float multiplier = 1.0f / (GameManager.Instance.SatisfactionAmplitude * 2.0f);
-        float moneyEarned = Mathf.Lerp(0.0f, 50.0f * GameManager.Instance.GroupsHandled, (GameManager.Instance.SatisfactionLevel + GameManager.Instance.SatisfactionAmplitude) * multiplier);
+        float maxCashPerGroup = 10.0f * GameManager.Instance.GetNumberOfUnlockedRooms();
+        int moneyEarned = (int)Mathf.Lerp(0.0f, maxCashPerGroup * GameManager.Instance.GroupsHandled, (GameManager.Instance.SatisfactionLevel + GameManager.Instance.SatisfactionAmplitude) * multiplier);
         GameManager.Instance.TotalMoney += moneyEarned;
-        _moneyEarnedText.text = "$" + moneyEarned.ToString("0.00");
+        _moneyEarnedText.text = "$" + moneyEarned.ToString();
 
         gameObject.SetActive(true);
         GyroscopeStageController.Instance.Reset();
@@ -62,25 +63,25 @@ public class StatisticsWindowController : ObjectBase
 
     private string SatisfactionToString(float level)
     {
-        if(level < -4.5f)
+        if(level < -(0.9f * GameManager.Instance.SatisfactionAmplitude))
         {
-            return "Very unhappy";
+            return "PORAŻKA";
         }
-        else if(level < -2.5f)
+        else if(level < -(0.5f * GameManager.Instance.SatisfactionAmplitude))
         {
-            return "Unhappy";
+            return "ZAWÓD";
         }
-        else if(level < 2.5f)
+        else if(level < (0.5f * GameManager.Instance.SatisfactionAmplitude))
         {
-            return "Neutral";
+            return "NIC SIĘ NIE STAŁO";
         }
-        else if(level < 4.5f)
+        else if(level < (0.9f * GameManager.Instance.SatisfactionAmplitude))
         {
-            return "Happy";
+            return "NIEŹLE";
         }
         else
         {
-            return "Very happy";
+            return "SUPER";
         }
     }
 }

@@ -40,8 +40,8 @@ public class SpritePlacer : EditorWindow
         progress = 0.2f;
         title = "Generating positions for new sprites";
         List<Vector3> newPositionsList = new List<Vector3>();
-        int maxI = 60;
-        int maxJ = 60;
+        int maxI = 70;
+        int maxJ = 70;
         for(int i = 0; i < maxI; ++i)
         {
             for(int j = 0; j < maxJ; ++j)

@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System;
 
 public class MenuController : ObjectBase
 {
@@ -17,13 +18,40 @@ public class MenuController : ObjectBase
     [SerializeField]
     private GameObject _howToPlayMenuParent;
     [SerializeField]
-    private Text _soundText;
+    private RoomImage _roomToBuy;
     [SerializeField]
-    private Color _soundOnColor;
+    private Text _moneyText;
     [SerializeField]
-    private Color _soundOffColor;
+    private Image _soundImage;
+    [SerializeField]
+    private Sprite _soundOnSprite;
+    [SerializeField]
+    private Sprite _soundOffSprite;
+    [SerializeField]
+    private Sprite _leftEndSprite;
+    [SerializeField]
+    private Sprite _rightEndSprite;
 
     #endregion
+
+    int Comparer(RoomInfo r1, RoomInfo r2)
+    {
+        if (r1.Room.Unlocked == r2.Room.Unlocked)
+        {
+            return r1.MoneyToUnlock.CompareTo(r2.MoneyToUnlock);
+        }
+        else
+        {
+            if (r1.Room.Unlocked)
+            {
+                return -1;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+    }
 
     #region Object Base methods
 
@@ -31,6 +59,68 @@ public class MenuController : ObjectBase
     {
         ExclamationMark.Instance.Reset();
         gameObject.SetActive(true);
+        RoomInfo[] rooms = GameManager.Instance.Rooms.ToArray();
+        Array.Sort(rooms, Comparer);
+        _roomToBuy.SetRoom(rooms[0]);
+        RectTransform firstTransform = _roomToBuy.GetComponent<RectTransform>();
+        for(int i = 1; i < rooms.Length; ++i)
+        {
+            GameObject go = Instantiate(_roomToBuy.gameObject);
+            go.GetComponent<RoomImage>().SetRoom(rooms[i]);
+            go.transform.SetParent(firstTransform.parent, false);
+            Vector3 position = firstTransform.anchoredPosition + firstTransform.rect.width * i * Vector2.right;
+            position.z = 0.0f;
+            go.GetComponent<RectTransform>().anchoredPosition3D = position;
+            go.GetComponent<RectTransform>().localScale = Vector3.one;
+        }
+
+        float temp = 193.0f;
+
+        GameObject leftEnd = new GameObject("LeftTapeEnd");
+        leftEnd.transform.SetParent(firstTransform.parent, false);
+        Image leftEndImage = leftEnd.AddComponent<Image>();
+        leftEndImage.sprite = _leftEndSprite;
+        leftEndImage.SetNativeSize();
+        RectTransform leftEndTransform = leftEnd.GetComponent<RectTransform>();
+        if(leftEndTransform == null)
+        {
+            leftEndTransform = leftEnd.AddComponent<RectTransform>();
+        }
+        leftEndTransform.pivot = firstTransform.pivot;
+        leftEndTransform.anchorMax = firstTransform.anchorMax;
+        leftEndTransform.anchorMin = firstTransform.anchorMin;
+        Vector3 leftEndPosition = firstTransform.anchoredPosition - Vector2.right * temp;
+        leftEndPosition.z = 0.0f;
+        leftEndTransform.anchoredPosition3D = leftEndPosition;
+        leftEndTransform.localScale = Vector3.one;
+        leftEndTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 333.5f);
+        leftEndTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 193.0f);
+
+        GameObject rightEnd = new GameObject("RightTapeEnd");
+        rightEnd.transform.SetParent(firstTransform.parent, false);
+        Image rightEndImage = rightEnd.AddComponent<Image>();
+        rightEndImage.sprite = _rightEndSprite;
+        rightEndImage.SetNativeSize();
+        RectTransform rightEndTransform = rightEnd.GetComponent<RectTransform>();
+        if (rightEndTransform == null)
+        {
+            rightEndTransform = rightEnd.AddComponent<RectTransform>();
+        }
+        rightEndTransform.pivot = firstTransform.pivot;
+        rightEndTransform.anchorMax = firstTransform.anchorMax;
+        rightEndTransform.anchorMin = firstTransform.anchorMin;
+        Vector3 rightEndPosition = firstTransform.anchoredPosition + Vector2.right * (rooms.Length * firstTransform.rect.width + temp);
+        rightEndPosition.z = 0.0f;
+        rightEndTransform.anchoredPosition3D = rightEndPosition;
+        rightEndTransform.localScale = Vector3.one;
+        rightEndTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 333.5f);
+        rightEndTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 193.0f);
+        rightEndTransform.rotation = Quaternion.Euler(0, 0, 180.0f);
+
+        if(firstTransform.parent != null)
+        {
+            firstTransform.parent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 193.0f * 3.0f + rooms.Length * firstTransform.rect.width);
+        }
     }
 
     public override void OnDecoratorStagetBegin()
@@ -63,11 +153,17 @@ public class MenuController : ObjectBase
     {
         base.OnEnable();
 
-        _soundText.color = GameManager.Instance.SoundOn ? _soundOnColor : _soundOffColor;
-        _soundText.text = GameManager.Instance.SoundOn ? "ON" : "OFF";
+        _soundImage.sprite = GameManager.Instance.SoundOn ? _soundOnSprite : _soundOffSprite;
         _mainMenuParent.SetActive(true);
         _shopMenuParent.SetActive(false);
         _exitMenuParent.SetActive(false);
+        _howToPlayMenuParent.SetActive(false);
+        _aboutMenuParent.SetActive(false);
+    }
+
+    void Update()
+    {
+        _moneyText.text = GameManager.Instance.TotalMoney.ToString("0");
     }
 
     #endregion
@@ -115,8 +211,8 @@ public class MenuController : ObjectBase
     public void SoundOnOffClick()
     {
         GameManager.Instance.SoundOn = !GameManager.Instance.SoundOn;
-        _soundText.color = GameManager.Instance.SoundOn ? _soundOnColor : _soundOffColor;
-        _soundText.text = GameManager.Instance.SoundOn ? "ON" : "OFF";
+        _soundImage.sprite = GameManager.Instance.SoundOn ? _soundOnSprite : _soundOffSprite;
+
     }
 
     public void ExitYesClick()

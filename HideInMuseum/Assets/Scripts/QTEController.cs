@@ -9,8 +9,9 @@ public class QTEController : Singleton<QTEController>
 
     public void SpawnQTE(Room room)
     {
-        //Prevent from having multiple qte events in the same room
-        if(room.IsQTEActive)
+        //Prevent from having multiple qte in the same room
+        //Also prevent from having qte in locked room
+        if(room.IsQTEActive || !room.Unlocked)
         {
             return;
         }

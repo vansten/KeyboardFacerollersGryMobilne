@@ -29,6 +29,10 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
 
     public void Show(Sprite exhibit, GameObject go, GroupMovement group)
     {
+#if UNITY_EDITOR
+        Debug.LogWarning("Gyroscope stage. Running in Unity Editor so skipping...");
+        gameObject.SetActive(false);
+#else
         _exhibitSpriteRenderer.sprite = exhibit;
         _rotationPoint.gameObject.SetActive(false);
         _exhibitObject = go;
@@ -43,6 +47,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
         _cameraSize = Camera.main.orthographicSize;
         Camera.main.orthographicSize = 12.0f;
         StartCoroutine(CountdownCoroutine());
+#endif
     }
 
     public void Reset()
@@ -71,7 +76,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
         {
             return;
         }
-
+        
         Vector3 accelerometerInput = Input.acceleration;
         Vector3 rotation = Vector3.zero;
         accelerometerInput.x += 0.1f;

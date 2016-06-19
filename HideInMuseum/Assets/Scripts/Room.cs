@@ -19,8 +19,11 @@ public class Room : MonoBehaviour
     public GameObject Water;
     public GameObject DarknessIcon;
     public GameObject WaterIcon;
+    public GameObject LockedObejct;
     [HideInInspector]
     public bool IsQTEActive;
+    [HideInInspector]
+    public bool Unlocked;
 
     private float _timer;
     private float _cooldown;
@@ -34,19 +37,18 @@ public class Room : MonoBehaviour
         Water.SetActive(false);
         WaterIcon.SetActive(false);
         IsQTEActive = false;
+
+        LockedObejct.SetActive(!Unlocked);
     }
 
     void Update()
     {
-        if (IsQTEActive)
+        _timer += Time.deltaTime;
+        if (_timer > _cooldown)
         {
-            _timer += Time.deltaTime;
-            if (_timer > _cooldown)
-            {
-                QTEController.Instance.SpawnQTE(this);
-                _timer = 0.0f;
-                _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
-            }
-        }
+            QTEController.Instance.SpawnQTE(this);
+            _timer = 0.0f;
+            _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
+         }
     }
 }
