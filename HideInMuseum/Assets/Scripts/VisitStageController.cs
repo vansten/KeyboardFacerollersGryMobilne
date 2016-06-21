@@ -113,6 +113,7 @@ public class VisitStageController : ObjectBase
                 _groupsImages[i].Initialize(null);
             }
 
+            ExclamationMark.Instance.Reset();
             SpawnNewGroup();
             _coroutineStarted = false;
             _timer = 0.0f;
@@ -253,6 +254,7 @@ public class VisitStageController : ObjectBase
                     if(_groupsSpawned[i].CurrentRoomType == RoomType.Entrance)
                     {
                         GroupMovement gm = _groupsSpawned[i];
+                        ExclamationMark.Instance.RemoveGroupWaiting(gm);
                         Destroy(gm.gameObject);
                         _groupsSpawned.RemoveAt(i);
                         i -= 1;

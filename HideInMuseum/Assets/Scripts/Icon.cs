@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Icon : MonoBehaviour
+public class Icon : ObjectBase
 {
     public Room MyRoom;
 
@@ -16,8 +16,9 @@ public class Icon : MonoBehaviour
         _spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
-    void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
         _showTime = Time.time;
     }
 
@@ -42,5 +43,15 @@ public class Icon : MonoBehaviour
     {
         _lastTapTime = Time.time;
         _tapCount += 1;
+    }
+
+    public override void OnStatisticsWindowBegin()
+    {
+        gameObject.SetActive(false);
+    }
+
+    public override void OnMenuBegin()
+    {
+        gameObject.SetActive(false);
     }
 }

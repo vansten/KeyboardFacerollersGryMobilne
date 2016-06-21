@@ -61,6 +61,11 @@ public class StatisticsWindowController : ObjectBase
         GameManager.Instance.CurrentState = GameState.Menu;
     }
 
+    public void Replay()
+    {
+        GameManager.Instance.CurrentState = GameState.VisitStage;
+    }
+
     private string SatisfactionToString(float level)
     {
         if(level < -(0.9f * GameManager.Instance.SatisfactionAmplitude))

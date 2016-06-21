@@ -12,7 +12,7 @@ public enum RoomType
     Entrance
 }
 
-public class Room : MonoBehaviour
+public class Room : ObjectBase
 {
     public RoomType Type;
     public GameObject Darkness;
@@ -28,8 +28,9 @@ public class Room : MonoBehaviour
     private float _timer;
     private float _cooldown;
 
-    void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
         _timer = 0.0f;
         _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
         Darkness.SetActive(false);
@@ -50,5 +51,30 @@ public class Room : MonoBehaviour
             _timer = 0.0f;
             _cooldown = Random.Range(QTEController.Instance.CooldownRange.x, QTEController.Instance.CooldownRange.y);
          }
+    }
+
+    public override void OnStatisticsWindowBegin()
+    {
+        Darkness.SetActive(false);
+        DarknessIcon.SetActive(false);
+        Water.SetActive(false);
+        WaterIcon.SetActive(false);
+        IsQTEActive = false;
+        enabled = false;
+    }
+
+    public override void OnVisitStageBegin()
+    {
+        enabled = true;
+    }
+
+    public override void OnMenuBegin()
+    {
+        Darkness.SetActive(false);
+        DarknessIcon.SetActive(false);
+        Water.SetActive(false);
+        WaterIcon.SetActive(false);
+        IsQTEActive = false;
+        enabled = false;
     }
 }
