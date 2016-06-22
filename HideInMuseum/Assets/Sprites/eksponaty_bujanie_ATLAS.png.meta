@@ -1,6 +1,6 @@
 fileFormatVersion: 2
 guid: fed8f394e0a86e34fa081c9fd1c2bc55
-timeCreated: 1465928054
+timeCreated: 1466597794
 licenseType: Free
 TextureImporter:
   fileIDToRecycleName:
@@ -228,10 +228,10 @@ TextureImporter:
       name: kostium1_bujanie
       rect:
         serializedVersion: 2
-        x: 78
-        y: 56
-        width: 415
-        height: 577
+        x: 128
+        y: 125
+        width: 314
+        height: 436
       alignment: 7
       pivot: {x: 0.5, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}

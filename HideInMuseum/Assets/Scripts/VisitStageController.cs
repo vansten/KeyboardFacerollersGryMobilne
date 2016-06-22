@@ -115,6 +115,7 @@ public class VisitStageController : ObjectBase
 
             ExclamationMark.Instance.Reset();
             SpawnNewGroup();
+            StartCoroutine(TutorialShow());
             _coroutineStarted = false;
             _timer = 0.0f;
             _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
@@ -260,6 +261,15 @@ public class VisitStageController : ObjectBase
                         i -= 1;
                     }
                 }
+
+                for (int i = 0; i < _groupsSpawned.Count; ++i)
+                {
+                    _groupsImages[i].Initialize(_groupsSpawned[i]);
+                }
+                for (int i = _groupsSpawned.Count; i < _groupsImages.Length; ++i)
+                {
+                    _groupsImages[i].Initialize(null);
+                }
             }
 
             if(_groupsSpawned.Count <= 0 && !_coroutineStarted)
@@ -279,6 +289,46 @@ public class VisitStageController : ObjectBase
     {
         yield return new WaitForSeconds(1.0f);
         GameManager.Instance.CurrentState = GameState.StatisticsWindow;
+    }
+
+    IEnumerator TutorialShow()
+    {
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_FirstGroupMovement);
+        yield return null;
+        while(Tutorial.Instance.IsShown())
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.2f);
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Exclamation);
+        yield return null;
+        while (Tutorial.Instance.IsShown())
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.2f);
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupIcons);
+        yield return null;
+        bool selectGroup = false;
+        while (Tutorial.Instance.IsShown())
+        {
+            selectGroup = true;
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.2f);
+        if(selectGroup)
+        {
+            InputHandler.Instance.SelectGroup(_groupsSpawned[0]);
+        }
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupObjectives);
+        yield return null;
+        while (Tutorial.Instance.IsShown())
+        {
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.2f);
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Satisfaction);
+        yield return null;
     }
 
     void SpawnNewGroup()

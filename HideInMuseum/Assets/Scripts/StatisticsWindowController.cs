@@ -45,6 +45,7 @@ public class StatisticsWindowController : ObjectBase
         float maxCashPerGroup = 10.0f * GameManager.Instance.GetNumberOfUnlockedRooms();
         int moneyEarned = (int)Mathf.Lerp(0.0f, maxCashPerGroup * GameManager.Instance.GroupsHandled, (GameManager.Instance.SatisfactionLevel + GameManager.Instance.SatisfactionAmplitude) * multiplier);
         GameManager.Instance.TotalMoney += moneyEarned;
+        GameManager.Instance.SaveData();
         _moneyEarnedText.text = "$" + moneyEarned.ToString();
 
         gameObject.SetActive(true);

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine.UI;
 
 public class GyroscopeStageController : Singleton<GyroscopeStageController>
-{
+{    
     [SerializeField]
     private SpriteRenderer _exhibitSpriteRenderer;
     [SerializeField]
@@ -145,6 +145,12 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
 
     IEnumerator CountdownCoroutine()
     {
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Gyroscope);
+        while(Tutorial.Instance.IsShown())
+        {
+            yield return null;
+        }
+        
         int i = 0;
         while(i < 3)
         {

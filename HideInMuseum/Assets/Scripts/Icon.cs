@@ -19,6 +19,7 @@ public class Icon : ObjectBase
     public override void OnEnable()
     {
         base.OnEnable();
+        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Fault);
         _showTime = Time.time;
     }
 

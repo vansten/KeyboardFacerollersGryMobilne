@@ -254,6 +254,7 @@ public class GameManager : Singleton<GameManager>
                 }
                 PlayerPrefs.SetInt("Room" + Rooms.IndexOf(ri), ri.Room.Unlocked ? 1 : 0);
             }
+            PlayerPrefs.Save();
         }
     }
 
@@ -267,6 +268,7 @@ public class GameManager : Singleton<GameManager>
         Screen.autorotateToPortrait = false;
         Screen.autorotateToPortraitUpsideDown = false;
         Screen.orientation = ScreenOrientation.AutoRotation;
+        Tutorial.Instance.Init();
     }
 
     void Update()
@@ -285,6 +287,11 @@ public class GameManager : Singleton<GameManager>
     }
 
     void OnApplicationQuit()
+    {
+        SaveData();
+    }
+
+    public void SaveData()
     {
         PlayerPrefs.SetInt("TotalMoneyEarned", TotalMoney);
         PlayerPrefs.SetInt("SoundOn", SoundOn ? 1 : 0);

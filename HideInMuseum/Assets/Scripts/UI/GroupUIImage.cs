@@ -37,6 +37,10 @@ public class GroupUIImage : MonoBehaviour
         if(_myGroup != null)
         {
             DangerImage.enabled = _myGroup.IsSad;
+            if(_myGroup.IsSad)
+            {
+                Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupSad);
+            }
         }
 
         if (DangerImage.enabled)

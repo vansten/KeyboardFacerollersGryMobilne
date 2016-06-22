@@ -28,6 +28,7 @@ public class RoomImage : MonoBehaviour
             GameManager.Instance.TotalMoney -= _roomInfo.MoneyToUnlock;
             _roomInfo.Room.Unlocked = true;
             BuyButton.SetActive(false);
+            GameManager.Instance.SaveData();
         }
     }
 }

@@ -212,6 +212,7 @@ public class MenuController : ObjectBase
     {
         GameManager.Instance.SoundOn = !GameManager.Instance.SoundOn;
         _soundImage.sprite = GameManager.Instance.SoundOn ? _soundOnSprite : _soundOffSprite;
+        GameManager.Instance.SaveData();
 
     }
 

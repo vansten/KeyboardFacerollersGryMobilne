@@ -50,9 +50,9 @@ TagManager:
   - name: Groups
     uniqueID: 2051213183
     locked: 0
-  - name: UI
-    uniqueID: 1568262481
-    locked: 0
   - name: GyroscopeStage
     uniqueID: 789789527
+    locked: 0
+  - name: UI
+    uniqueID: 1568262481
     locked: 0

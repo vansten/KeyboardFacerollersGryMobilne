@@ -76,6 +76,15 @@ public class InputHandler : Singleton<InputHandler>
             return;
         }
 
+        if(Tutorial.Instance.IsShown())
+        {
+            if(_currentGroup != null)
+            {
+                _currentGroup.ClearPath();
+            }
+            return;
+        }
+
         _inputEnded = false;
         _continuePath = false;
 
