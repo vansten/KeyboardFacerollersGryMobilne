@@ -32,6 +32,7 @@ public class Icon : ObjectBase
 
         if(_tapCount >= 5)
         {
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Fault);
             QTEController.Instance.RemoveQTE(MyRoom);
         }
 
@@ -48,11 +49,13 @@ public class Icon : ObjectBase
 
     public override void OnStatisticsWindowBegin()
     {
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Fault);
         gameObject.SetActive(false);
     }
 
     public override void OnMenuBegin()
     {
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Fault);
         gameObject.SetActive(false);
     }
 }

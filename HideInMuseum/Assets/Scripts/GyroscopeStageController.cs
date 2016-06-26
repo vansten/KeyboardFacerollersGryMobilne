@@ -129,6 +129,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
             InputHandler.Instance.enabled = true;
             GameManager.Instance.ExhibitCracked(_group);
             Camera.main.orthographicSize = _cameraSize;
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Gyroscope);
             gameObject.SetActive(false);
         }
 
@@ -139,6 +140,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
             Time.timeScale = 1.0f;
             InputHandler.Instance.enabled = true;
             Camera.main.orthographicSize = _cameraSize;
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Gyroscope);
             gameObject.SetActive(false);
         }
     }
@@ -146,7 +148,7 @@ public class GyroscopeStageController : Singleton<GyroscopeStageController>
     IEnumerator CountdownCoroutine()
     {
         Tutorial.Instance.ShowTutorial(TutorialStage.TS_Gyroscope);
-        while(Tutorial.Instance.IsShown())
+        while(Tutorial.Instance.IsPopupActive())
         {
             yield return null;
         }

@@ -113,9 +113,9 @@ public class VisitStageController : ObjectBase
                 _groupsImages[i].Initialize(null);
             }
 
-            ExclamationMark.Instance.Reset();
             SpawnNewGroup();
-            StartCoroutine(TutorialShow());
+            Tutorial.Instance.ShowTutorial(TutorialStage.TS_FirstGroupMovement);
+            ExclamationMark.Instance.Reset();
             _coroutineStarted = false;
             _timer = 0.0f;
             _spawnCooldown = Random.Range(_spawnCooldownRange.x, _spawnCooldownRange.y);
@@ -145,11 +145,16 @@ public class VisitStageController : ObjectBase
         if(_groupsSpawned.Count > i)
         {
             InputHandler.Instance.SelectGroup(_groupsSpawned[i]);
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_GroupIcons);
         }
     }
 
     public void FillRoomsToVisit(GroupMovement group)
     {
+        if(Tutorial.Instance.WasShown(TutorialStage.TS_GroupIcons))
+        {
+            Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupObjectives);
+        }
         int rooms = group.RoomsToVisit.Count;
         for (int i = 2, j = 1; i >= 0; --i ,++j)
         {
@@ -291,46 +296,6 @@ public class VisitStageController : ObjectBase
         GameManager.Instance.CurrentState = GameState.StatisticsWindow;
     }
 
-    IEnumerator TutorialShow()
-    {
-        Tutorial.Instance.ShowTutorial(TutorialStage.TS_FirstGroupMovement);
-        yield return null;
-        while(Tutorial.Instance.IsShown())
-        {
-            yield return null;
-        }
-        yield return new WaitForSeconds(0.2f);
-        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Exclamation);
-        yield return null;
-        while (Tutorial.Instance.IsShown())
-        {
-            yield return null;
-        }
-        yield return new WaitForSeconds(0.2f);
-        Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupIcons);
-        yield return null;
-        bool selectGroup = false;
-        while (Tutorial.Instance.IsShown())
-        {
-            selectGroup = true;
-            yield return null;
-        }
-        yield return new WaitForSeconds(0.2f);
-        if(selectGroup)
-        {
-            InputHandler.Instance.SelectGroup(_groupsSpawned[0]);
-        }
-        Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupObjectives);
-        yield return null;
-        while (Tutorial.Instance.IsShown())
-        {
-            yield return null;
-        }
-        yield return new WaitForSeconds(0.2f);
-        Tutorial.Instance.ShowTutorial(TutorialStage.TS_Satisfaction);
-        yield return null;
-    }
-
     void SpawnNewGroup()
     {
         if(_groupsSpawned.Count >= GameManager.Instance.MaxGroupCount || ExclamationMark.Instance.IsGroupWaiting())
@@ -345,6 +310,14 @@ public class VisitStageController : ObjectBase
         ExclamationMark.Instance.AddGroupWaiting(gm);
         _source.Play();
         _groupsImages[_groupsSpawned.Count - 1].Initialize(gm);
+
+        if (_groupsSpawned.Count >= 2)
+        {
+            if (Tutorial.Instance.WasShown(TutorialStage.TS_Exclamation))
+            {
+                Tutorial.Instance.ShowTutorial(TutorialStage.TS_GroupIcons);
+            }
+        }
     }
 
     void UpdateGroupsImages()
@@ -392,5 +365,21 @@ public class VisitStageController : ObjectBase
         {
             _satisfactionFaceImage.sprite = _satisfactionFaceSprites[4];
         }
+
+        if(Tutorial.Instance.WasShown(TutorialStage.TS_FirstGroupMovement))
+        {
+            Tutorial.Instance.ShowTutorial(TutorialStage.TS_Satisfaction);
+            StartCoroutine(EndSatisfactionTutorial());
+        }
+    }
+
+    IEnumerator EndSatisfactionTutorial()
+    {
+        while(Tutorial.Instance.IsPopupActive())
+        {
+            yield return null;
+        }
+
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Satisfaction);
     }
 }

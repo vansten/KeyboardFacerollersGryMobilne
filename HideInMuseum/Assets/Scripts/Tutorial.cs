@@ -40,25 +40,36 @@ public class Tutorial : Singleton<Tutorial>
     private Dictionary<TutorialStage, TutorialObject> _stageToObjectDictionary = new Dictionary<TutorialStage, TutorialObject>();
     private TutorialObject _shownObject;
     private bool _tutorialShown;
+    private bool _skipped;
 
     public void OKClick()
     {
-        _tutorialShown = false;
+        if(_shownObject == null)
+        {
+            Debug.LogError("There is no shown object but it's possible to click OK");
+            return;
+        }
+
         _shownObject.SetActive(false);
         _popup.SetActive(false);
+        EndShowTutorial(TutorialStage.TS_GroupSad);
         Time.timeScale = 1.0f;
     }
 
     public void SkipClick()
     {
-        _tutorialShown = false;
+        if (_shownObject == null)
+        {
+            Debug.LogError("There is no shown object but it's possible to click Skip");
+            return;
+        }
+
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_GroupSad);
         _popup.SetActive(false);
         _shownObject.SetActive(false);
-        foreach(TutorialObject to in TutorialObjects)
-        {
-            PlayerPrefs.SetInt(to.Stage.ToString() + "_shown", 1);
-        }
-        PlayerPrefs.Save();
+        _skipped = true;
+        _tutorialShown = false;
+        PlayerPrefs.SetInt("TutorialSkipped", 1);
         Time.timeScale = 1.0f;
     }
 
@@ -74,16 +85,17 @@ public class Tutorial : Singleton<Tutorial>
         }
         _tutorialShown = false;
         _shownObject = null;
+        _skipped = PlayerPrefs.GetInt("TutorialSkipped", 0) == 1;
     }
 
-    public bool IsShown()
+    public bool IsPopupActive()
     {
-        return _tutorialShown;
+        return _popup.activeInHierarchy;
     }
 
     public void ShowTutorial(TutorialStage stage)
     {
-        if(GameManager.Instance.CurrentState != GameState.VisitStage)
+        if(GameManager.Instance.CurrentState != GameState.VisitStage || _tutorialShown || _skipped || _shownObject != null)
         {
             return;
         }
@@ -115,5 +127,31 @@ public class Tutorial : Singleton<Tutorial>
             Time.timeScale = 0.0f;
         }
         _shownObject = to;
+    }
+
+    public void EndShowTutorial(TutorialStage stage)
+    {
+        if(_shownObject == null || !_tutorialShown)
+        {
+            return;
+        }
+
+        if(_shownObject.Stage != stage)
+        {
+            return;
+        }
+
+        _tutorialShown = false;
+        _shownObject = null;
+    }
+
+    public bool WasShown(TutorialStage stage)
+    {
+        if(_skipped)
+        {
+            return true;
+        }
+
+        return PlayerPrefs.GetInt(stage.ToString() + "_shown", 0) == 1;
     }
 }

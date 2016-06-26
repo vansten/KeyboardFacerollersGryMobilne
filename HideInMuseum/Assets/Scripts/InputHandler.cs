@@ -76,12 +76,13 @@ public class InputHandler : Singleton<InputHandler>
             return;
         }
 
-        if(Tutorial.Instance.IsShown())
+        if(Tutorial.Instance.IsPopupActive())
         {
-            if(_currentGroup != null)
+            if(_currentGroup != null && _continuePath)
             {
-                _currentGroup.ClearPath();
+                _currentGroup.EndPath();
             }
+            _currentMode = InputMode.CameraControls;
             return;
         }
 

@@ -36,7 +36,6 @@ public class Entrance : MonoBehaviour
                 else
                 {
                     _groupsInEntrance.Add(gm);
-                    ExclamationMark.Instance.RemoveGroupWaiting(gm);
                     if (gm.CurrentRoomType != RoomType.Entrance)
                     {
                         gm.ClearPath();
@@ -54,6 +53,7 @@ public class Entrance : MonoBehaviour
             if (gm != null)
             {
                 _groupsInEntrance.Remove(gm);
+                ExclamationMark.Instance.RemoveGroupWaiting(gm);
             }
         }
     }

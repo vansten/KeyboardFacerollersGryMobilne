@@ -236,6 +236,7 @@ public class GroupMovement : MonoBehaviour
         _maxTimeToVisitTimer = 0f;
         _standingTimer = 0.0f;
         GameManager.Instance.UpdateGroupMissionsDispaly(this);
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_GroupObjectives);
     }
 
     void FixedUpdate()
@@ -414,6 +415,7 @@ public class GroupMovement : MonoBehaviour
         _prevPosition = transform.position;
         _targetUp = -(_path[0] - transform.position).normalized;
         _lineRenderer.SetColors(_colorToSet, _colorToSet);
+        Tutorial.Instance.EndShowTutorial(TutorialStage.TS_FirstGroupMovement);
     }
 
     public void WrongPath()

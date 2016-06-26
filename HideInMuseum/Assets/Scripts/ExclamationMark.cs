@@ -39,6 +39,11 @@ public class ExclamationMark : Singleton<ExclamationMark>
             float sin = Mathf.Sin(Time.time * 5.0f);
             _color.a = sin * sin;
             _image.color = _color;
+
+            if (Tutorial.Instance.WasShown(TutorialStage.TS_FirstGroupMovement))
+            {
+                Tutorial.Instance.ShowTutorial(TutorialStage.TS_Exclamation);
+            }
         }
     } 
 
@@ -70,6 +75,8 @@ public class ExclamationMark : Singleton<ExclamationMark>
         if(_groupsWaiting.Contains(group))
         {
             _groupsWaiting.Remove(group);
+            Debug.Log("End of exclamation");
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Exclamation);
         }
     }
 
@@ -82,6 +89,7 @@ public class ExclamationMark : Singleton<ExclamationMark>
             cameraPos.y = _groupsWaiting[0].transform.position.y;
             Camera.main.transform.position = cameraPos;
             InputHandler.Instance.AdjustCameraTransform();
+            Tutorial.Instance.EndShowTutorial(TutorialStage.TS_Exclamation);
         }
     }
 }
